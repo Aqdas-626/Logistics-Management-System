@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Cart\CartController;
 use App\Http\Controllers\Company\DepartmentController;
 use App\Http\Controllers\Container\ContainerController;
 use App\Http\Controllers\Container\JobDocumentController;
@@ -9,58 +10,61 @@ use App\Http\Controllers\Country\BranchController;
 use App\Http\Controllers\Country\CompanyController;
 use App\Http\Controllers\Country\CountryController;
 use App\Http\Controllers\Customer\CustomerController;
-use App\Http\Controllers\Job\DoorTypeController;
-use App\Http\Controllers\Job\LiftTypeController;
-use App\Http\Controllers\Job\LocationTypeController;
-use App\Http\Controllers\Job\LocationController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Job\ShippingController;
-use App\Http\Controllers\Job\ShipTypeController;
-use App\Http\Controllers\Job\VesselController;
-use App\Http\Controllers\Job\IsoCodeController;
-use App\Http\Controllers\Job\PackageTypeController;
-use App\Http\Controllers\Job\DgTypeController;
-use App\Http\Controllers\Job\DgSignatoryController;
-use App\Http\Controllers\Job\JobPackageController;
-use App\Http\Controllers\Job\NotificationTypeController;
-use App\Http\Controllers\Job\JobTrackingNotificationController;
-use App\Http\Controllers\Job\JobAdditionalInformationController;
-use App\Http\Controllers\Job\JobBookingController;
-use App\Http\Controllers\Job\JobCostController;
-use App\Http\Controllers\Job\JobQueueController;
-use App\Http\Controllers\Job\JobQueueHubController;
-use App\Http\Controllers\Job\JobQueueJobNoteController;
-use App\Http\Controllers\Job\Queue\JobQueueDocumentController;
-use App\Http\Controllers\Job\JobRevenueController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Driver\DriverController;
+use App\Http\Controllers\Driver\DriverDocumentController;
+use App\Http\Controllers\Driver\DriverVehicleAssignmentController;
+use App\Http\Controllers\Export\ExportController;
+use App\Http\Controllers\History\JobStatusHistoryController;
 use App\Http\Controllers\Import\ImportController;
 use App\Http\Controllers\Invoice\InvoiceController;
 use App\Http\Controllers\Invoice\InvoicePaymentController;
-use App\Http\Controllers\Export\ExportController;
-use App\Http\Controllers\Driver\DriverDocumentController;
-use App\Http\Controllers\Driver\DriverController;
-use App\Http\Controllers\Driver\DriverVehicleAssignmentController;
-use App\Http\Controllers\Vehicle\VehicleController;
-use App\Http\Controllers\Vehicle\VehicleTypeController;
+use App\Http\Controllers\Job\DgSignatoryController;
+use App\Http\Controllers\Job\DgTypeController;
+use App\Http\Controllers\Job\DoorTypeController;
+use App\Http\Controllers\Job\EndorsementController;
+use App\Http\Controllers\Job\IsoCodeController;
+use App\Http\Controllers\Job\JobAdditionalInformationController;
+use App\Http\Controllers\Job\JobBookingController;
+use App\Http\Controllers\Job\JobCostController;
+use App\Http\Controllers\Job\JobPackageController;
+use App\Http\Controllers\Job\JobQueueController;
+use App\Http\Controllers\Job\JobQueueHubController;
+use App\Http\Controllers\Job\JobQueueJobNoteController;
+use App\Http\Controllers\Job\JobRevenueController;
+use App\Http\Controllers\Job\JobTrackingNotificationController;
+use App\Http\Controllers\Job\LiftTypeController;
+use App\Http\Controllers\Job\LocationController;
+use App\Http\Controllers\Job\LocationTypeController;
+use App\Http\Controllers\Job\NotificationTypeController;
+use App\Http\Controllers\Job\PackageTypeController;
+use App\Http\Controllers\Job\Queue\JobQueueDocumentController;
+use App\Http\Controllers\Job\ShippingController;
+use App\Http\Controllers\Job\ShipTypeController;
+use App\Http\Controllers\Job\VesselController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\Revenue\ChargeTypeController;
 use App\Http\Controllers\Revenue\RevenueTypeController;
-use App\Http\Controllers\Cart\CartController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\Swing\SwingController;
 use App\Http\Controllers\User\PermissionController;
 use App\Http\Controllers\User\RoleController;
 use App\Http\Controllers\User\UserRoleController;
+use App\Http\Controllers\Vehicle\VehicleController;
+use App\Http\Controllers\Vehicle\VehicleTypeController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use Spatie\Permission\Middleware\PermissionMiddleware;
 
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', DashboardController::class)->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('search', SearchController::class)->name('search.global');
     Route::resource('countries', CountryController::class);
     Route::resource('companies', CompanyController::class);
     Route::resource('branches', BranchController::class);
@@ -71,13 +75,13 @@ Route::middleware('auth')->group(function () {
     Route::resource('location-types', LocationTypeController::class);
     Route::resource('locations', LocationController::class);
     Route::resource('shippings', ShippingController::class);
-    Route::resource('ship_types',ShipTypeController::class);
+    Route::resource('ship_types', ShipTypeController::class);
     Route::resource('vessels', VesselController::class);
     Route::resource('iso-codes', IsoCodeController::class);
     Route::resource('package-types', PackageTypeController::class);
     Route::resource('dg-types', DgTypeController::class);
     Route::resource('dg-signatories', DgSignatoryController::class);
-    Route::resource('endorsements', \App\Http\Controllers\Job\EndorsementController::class);
+    Route::resource('endorsements', EndorsementController::class);
     Route::resource('job-packages', JobPackageController::class)->only(['index', 'destroy']);
     Route::resource('notification-types', NotificationTypeController::class);
     Route::resource('job-tracking-notifications', JobTrackingNotificationController::class)->only(['index', 'destroy']);
@@ -88,6 +92,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('job-services', JobServiceController::class)->only(['index']);
     Route::get('job-queues', [JobQueueController::class, 'index'])->name('job-queues.index');
     Route::get('job-queues/{jobQueue}/financials', [JobQueueController::class, 'financials'])->name('job-queues.financials');
+    Route::get('job-status-histories', [JobStatusHistoryController::class, 'index'])->name('job-status-histories.index');
+    Route::post('job-status-histories', [JobStatusHistoryController::class, 'store'])->name('job-status-histories.store');
     Route::post('job-queue-notes', [JobQueueJobNoteController::class, 'store'])->name('job-queue-notes.store');
     Route::put('job-queue-notes/{jobNote}', [JobQueueJobNoteController::class, 'update'])->name('job-queue-notes.update');
     Route::delete('job-queue-notes/{jobNote}', [JobQueueJobNoteController::class, 'destroy'])->name('job-queue-notes.destroy');
@@ -128,55 +134,55 @@ Route::middleware('auth')->group(function () {
     // RBAC
     Route::get('roles', [RoleController::class, 'index'])
         ->name('roles.index')
-        ->middleware(PermissionMiddleware::class . ':role.view');
+        ->middleware(PermissionMiddleware::class.':role.view');
     Route::get('roles/create', [RoleController::class, 'create'])
         ->name('roles.create')
-        ->middleware(PermissionMiddleware::class . ':role.manage');
+        ->middleware(PermissionMiddleware::class.':role.manage');
     Route::post('roles', [RoleController::class, 'store'])
         ->name('roles.store')
-        ->middleware(PermissionMiddleware::class . ':role.manage');
+        ->middleware(PermissionMiddleware::class.':role.manage');
     Route::get('roles/{role}/edit', [RoleController::class, 'edit'])
         ->name('roles.edit')
-        ->middleware(PermissionMiddleware::class . ':role.manage');
+        ->middleware(PermissionMiddleware::class.':role.manage');
     Route::put('roles/{role}', [RoleController::class, 'update'])
         ->name('roles.update')
-        ->middleware(PermissionMiddleware::class . ':role.manage');
+        ->middleware(PermissionMiddleware::class.':role.manage');
     Route::delete('roles/{role}', [RoleController::class, 'destroy'])
         ->name('roles.destroy')
-        ->middleware(PermissionMiddleware::class . ':role.manage');
+        ->middleware(PermissionMiddleware::class.':role.manage');
 
     Route::get('permissions', [PermissionController::class, 'index'])
         ->name('permissions.index')
-        ->middleware(PermissionMiddleware::class . ':permission.view');
+        ->middleware(PermissionMiddleware::class.':permission.view');
     Route::get('permissions/create', [PermissionController::class, 'create'])
         ->name('permissions.create')
-        ->middleware(PermissionMiddleware::class . ':permission.manage');
+        ->middleware(PermissionMiddleware::class.':permission.manage');
     Route::post('permissions', [PermissionController::class, 'store'])
         ->name('permissions.store')
-        ->middleware(PermissionMiddleware::class . ':permission.manage');
+        ->middleware(PermissionMiddleware::class.':permission.manage');
     Route::delete('permissions/{permission}', [PermissionController::class, 'destroy'])
         ->name('permissions.destroy')
-        ->middleware(PermissionMiddleware::class . ':permission.manage');
+        ->middleware(PermissionMiddleware::class.':permission.manage');
 
     Route::get('user-roles', [UserRoleController::class, 'index'])
         ->name('user-roles.index')
-        ->middleware(PermissionMiddleware::class . ':rbac.assign_roles');
+        ->middleware(PermissionMiddleware::class.':rbac.assign_roles');
     Route::get('user-roles/create', [UserRoleController::class, 'create'])
         ->name('user-roles.create')
-        ->middleware(PermissionMiddleware::class . ':rbac.assign_roles');
+        ->middleware(PermissionMiddleware::class.':rbac.assign_roles');
     Route::post('user-roles', [UserRoleController::class, 'store'])
         ->name('user-roles.store')
-        ->middleware(PermissionMiddleware::class . ':rbac.assign_roles');
+        ->middleware(PermissionMiddleware::class.':rbac.assign_roles');
     Route::get('user-roles/{user}/edit', [UserRoleController::class, 'edit'])
         ->name('user-roles.edit')
-        ->middleware(PermissionMiddleware::class . ':rbac.assign_roles');
+        ->middleware(PermissionMiddleware::class.':rbac.assign_roles');
     Route::put('user-roles/{user}', [UserRoleController::class, 'update'])
         ->name('user-roles.update')
-        ->middleware(PermissionMiddleware::class . ':rbac.assign_roles');
+        ->middleware(PermissionMiddleware::class.':rbac.assign_roles');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

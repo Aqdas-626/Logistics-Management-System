@@ -14,6 +14,7 @@ import {
     XMarkIcon,
 } from '@/Components/Icons';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ driver, documents }) {
     const { flash } = usePage().props;
@@ -70,11 +71,14 @@ export default function Index({ driver, documents }) {
     };
 
     const destroy = (documentId) => {
-        if (confirm('Delete this document?')) {
+        confirmDelete({
+            message: 'Delete this document?',
+            onConfirm: () => {
             router.delete(route('drivers.documents.destroy', [driver.id, documentId]), {
-                preserveScroll: true,
-            });
-        }
+                            preserveScroll: true,
+                        });
+            },
+        });
     };
 
     return (

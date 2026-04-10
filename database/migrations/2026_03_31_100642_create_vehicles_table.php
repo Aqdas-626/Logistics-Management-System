@@ -17,6 +17,11 @@ return new class extends Migration
             $table->foreignId('branch_id')->nullable()->constrained('branches')->cascadeOnDelete();
             $table->foreignId('vehicle_type_id')->nullable()->constrained('vehicle_types')->nullOnDelete();
             $table->string('registration_no', 60);
+            $table->string('chassis_no', 60)->nullable();
+            $table->string('engine_no', 60)->nullable();
+            $table->string('color', 60)->nullable();
+            $table->enum('fuel_type', ['petrol', 'diesel', 'electric', 'hybrid'])->nullable();
+            $table->decimal('fuel_capacity', 12, 2)->nullable();
             $table->string('vin', 60)->nullable();
             $table->string('status', 30)->default('active');
             $table->decimal('odometer_km', 12, 2)->nullable();

@@ -1,9 +1,10 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import DangerButton from '@/Components/DangerButton';
 import InputLabel from '@/Components/InputLabel';
 import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
+import { PencilIcon, TrashIcon } from '@/Components/Icons';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ vehicleTypes, filters }) {
     const { flash } = usePage().props;
@@ -17,9 +18,12 @@ export default function Index({ vehicleTypes, filters }) {
     };
 
     const destroy = (id) => {
-        if (confirm('Delete this vehicle type?')) {
+        confirmDelete({
+            message: 'Delete this vehicle type?',
+            onConfirm: () => {
             router.delete(route('vehicle-types.destroy', id));
-        }
+            },
+        });
     };
 
     return (
@@ -30,12 +34,12 @@ export default function Index({ vehicleTypes, filters }) {
                         Vehicle Types
                     </h2>
                     <Link
-                        href={route('vehicle-types.create')}
-                        className="inline-flex items-center rounded-md border border-transparent px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:opacity-90"
-                        style={{ backgroundColor: '#20A4AC' }}
-                    >
-                        Add Type
-                    </Link>
+                            href={route('vehicle-types.create')}
+                            className="inline-flex items-center rounded-md border border-transparent px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:opacity-90"
+                            style={{ backgroundColor: '#20A4AC' }}
+                        >
+                            Create Vehicle Type
+                        </Link>
                 </div>
             }
         >
@@ -48,16 +52,6 @@ export default function Index({ vehicleTypes, filters }) {
                             {flash.success}
                         </div>
                     )}
-
-                    <div className="mb-4 flex justify-end">
-                        <Link
-                            href={route('vehicle-types.create')}
-                            className="inline-flex items-center rounded-md border border-transparent px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:opacity-90"
-                            style={{ backgroundColor: '#20A4AC' }}
-                        >
-                            Create Vehicle Type
-                        </Link>
-                    </div>
 
                     <form onSubmit={submitSearch} className="mb-6 flex items-end gap-4">
                         <div>
@@ -102,17 +96,21 @@ export default function Index({ vehicleTypes, filters }) {
                                             <td className="px-3 py-2 text-right">
                                                 <Link
                                                     href={route('vehicle-types.edit', type.id)}
-                                                    className="me-2 inline-flex items-center rounded-md border border-[#20A4AC]/30 bg-[#20A4AC]/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-[#178089] hover:bg-[#20A4AC]/20"
+                                                    className="me-2 inline-flex items-center text-[#178089] hover:text-[#0f5c61]"
+                                                    title="Edit"
+                                                    aria-label="Edit vehicle type"
                                                 >
-                                                    Edit
+                                                    <PencilIcon className="h-4 w-4" />
                                                 </Link>
-                                                <DangerButton
+                                                <button
                                                     type="button"
-                                                    className="text-xs"
+                                                    className="inline-flex items-center text-red-600 hover:text-red-800"
+                                                    title="Delete"
+                                                    aria-label="Delete vehicle type"
                                                     onClick={() => destroy(type.id)}
                                                 >
-                                                    Delete
-                                                </DangerButton>
+                                                    <TrashIcon className="h-4 w-4" />
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}

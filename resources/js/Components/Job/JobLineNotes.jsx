@@ -2,6 +2,7 @@ import { Dialog, Transition } from '@headlessui/react';
 import { PencilIcon, TrashIcon } from '@/Components/Icons';
 import { router, useForm } from '@inertiajs/react';
 import { Fragment, useCallback, useMemo, useState } from 'react';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 const TEAL = '#20A4AC';
 
@@ -123,10 +124,14 @@ export default function JobLineNotes({
     };
 
     const onDelete = (row) => {
-        if (!confirm('Delete this note?')) return;
-        router.delete(route('job-queue-notes.destroy', row.id), {
-            ...inertiaVisitOptions,
-            onSuccess: () => onAfterMutation?.(),
+        confirmDelete({
+            message: 'Delete this note?',
+            onConfirm: () => {
+            router.delete(route('job-queue-notes.destroy', row.id), {
+                        ...inertiaVisitOptions,
+                        onSuccess: () => onAfterMutation?.(),
+                    });
+            },
         });
     };
 

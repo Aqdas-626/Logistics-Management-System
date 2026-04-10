@@ -7,6 +7,7 @@ import {
     MagnifyingGlassIcon,
     PlusIcon,
 } from '@/Components/Icons';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ customers, filters }) {
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
@@ -26,13 +27,16 @@ export default function Index({ customers, filters }) {
     };
 
     const handleDelete = (id) => {
-        if (confirm('Are you sure you want to delete this customer?')) {
+        confirmDelete({
+            message: 'Are you sure you want to delete this customer?',
+            onConfirm: () => {
             router.delete(route('customers.destroy', id), {
-                onSuccess: () => {
-                    // Success notification will be shown by Laravel
-                },
-            });
-        }
+                            onSuccess: () => {
+                                // Success notification will be shown by Laravel
+                            },
+                        });
+            },
+        });
     };
 
     const handleSearch = (e) => {

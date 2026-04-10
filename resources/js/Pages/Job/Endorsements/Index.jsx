@@ -8,6 +8,7 @@ import {
     MagnifyingGlassIcon,
     PlusIcon,
 } from '@/Components/Icons';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ endorsements, filters }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,9 +26,12 @@ export default function Index({ endorsements, filters }) {
     };
 
     const handleDelete = (id) => {
-        if (confirm('Are you sure you want to delete this endorsement?')) {
+        confirmDelete({
+            message: 'Are you sure you want to delete this endorsement?',
+            onConfirm: () => {
             router.delete(route('endorsements.destroy', id));
-        }
+            },
+        });
     };
 
     const handleSearch = (e) => {

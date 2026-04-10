@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import StatCard from '@/Components/Dashboard/StatCard';
 import RevenueCard from '@/Components/Dashboard/RevenueCard';
 import RecentJobsCard from '@/Components/Dashboard/RecentJobsCard';
@@ -14,7 +14,36 @@ import {
     ClockIcon,
 } from '@/Components/Icons';
 
+const defaultRevenueStats = {
+    today: { total: 0, period: '' },
+    week: { total: 0, period: '' },
+    month: { total: 0, period: '' },
+};
+
+const defaultStatCounts = {
+    totalJobs: 0,
+    activeDrivers: 0,
+    pendingDispatches: 0,
+    deliveriesToday: 0,
+    completedJobs: 0,
+    openInvoices: 0,
+};
+
 export default function Dashboard() {
+    const {
+        revenueStats: rawRevenue,
+        statCounts: rawStatCounts,
+        recentActivities = [],
+        recentJobs = [],
+    } = usePage().props;
+    const revenueStats = {
+        today: { ...defaultRevenueStats.today, ...rawRevenue?.today },
+        week: { ...defaultRevenueStats.week, ...rawRevenue?.week },
+        month: { ...defaultRevenueStats.month, ...rawRevenue?.month },
+    };
+    const statCounts = { ...defaultStatCounts, ...rawStatCounts };
+    const queueHref = route('job-queues.index');
+
     return (
         <AuthenticatedLayout>
             <Head title="Dashboard" />
@@ -31,49 +60,37 @@ export default function Dashboard() {
                     <StatCard
                         icon={BriefcaseIcon}
                         label="Total Jobs"
-                        value="0"
-                        change="12%"
-                        isPositive={true}
+                        value={String(statCounts.totalJobs)}
                         color="blue"
                     />
                     <StatCard
                         icon={UserGroupIcon}
                         label="Active Drivers"
-                        value="0"
-                        change="8%"
-                        isPositive={true}
+                        value={String(statCounts.activeDrivers)}
                         color="green"
                     />
                     <StatCard
                         icon={TruckIcon}
                         label="Pending Dispatches"
-                        value="0"
-                        change="5%"
-                        isPositive={false}
+                        value={String(statCounts.pendingDispatches)}
                         color="yellow"
                     />
                     <StatCard
                         icon={CurrencyDollarIcon}
                         label="Today's Deliveries"
-                        value="0"
-                        change="23%"
-                        isPositive={true}
+                        value={String(statCounts.deliveriesToday)}
                         color="purple"
                     />
                     <StatCard
                         icon={CheckCircleIcon}
                         label="Completed Jobs"
-                        value="0"
-                        change="3%"
-                        isPositive={true}
+                        value={String(statCounts.completedJobs)}
                         color="pink"
                     />
                     <StatCard
                         icon={ClockIcon}
                         label="Open Invoices"
-                        value="0"
-                        change="0%"
-                        isPositive={true}
+                        value={String(statCounts.openInvoices)}
                         color="blue"
                     />
                 </div>
@@ -82,24 +99,27 @@ export default function Dashboard() {
                 <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     <RevenueCard
                         title="Revenue Today"
-                        amount="$0.00"
-                        period="Last 24 hours"
+                        amount={revenueStats.today.total}
+                        period={revenueStats.today.period}
                         icon={CurrencyDollarIcon}
                         color="green"
+                        viewHref={queueHref}
                     />
                     <RevenueCard
                         title="Revenue This Week"
-                        amount="$0.00"
-                        period="Last 7 days"
+                        amount={revenueStats.week.total}
+                        period={revenueStats.week.period}
                         icon={ClockIcon}
                         color="blue"
+                        viewHref={queueHref}
                     />
                     <RevenueCard
                         title="Revenue This Month"
-                        amount="$0.00"
-                        period="Current month"
+                        amount={revenueStats.month.total}
+                        period={revenueStats.month.period}
                         icon={CheckCircleIcon}
                         color="orange"
+                        viewHref={queueHref}
                     />
                 </div>
 
@@ -107,7 +127,7 @@ export default function Dashboard() {
                 <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
                     {/* Left side - Recent Jobs (takes 2 columns) */}
                     <div className="lg:col-span-2">
-                        <RecentJobsCard jobs={[]} />
+                        <RecentJobsCard jobs={recentJobs} />
                     </div>
 
                     {/* Right side - Quick Actions */}
@@ -118,7 +138,7 @@ export default function Dashboard() {
 
                 {/* Activities Section */}
                 <div className="mt-8">
-                    <RecentActivitiesCard />
+                    <RecentActivitiesCard activities={recentActivities} />
                 </div>
             </div>
         </AuthenticatedLayout>

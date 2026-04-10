@@ -4,6 +4,7 @@ import TextInput from '@/Components/TextInput';
 import InputLabel from '@/Components/InputLabel';
 import { EyeIcon, PencilIcon, PlusIcon, TrashIcon } from '@/Components/Icons';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ branches, companies, filters }) {
     const { flash } = usePage().props;
@@ -21,9 +22,12 @@ export default function Index({ branches, companies, filters }) {
     };
 
     const destroy = (id) => {
-        if (confirm('Delete this branch?')) {
+        confirmDelete({
+            message: 'Delete this branch?',
+            onConfirm: () => {
             router.delete(route('branches.destroy', id));
-        }
+            },
+        });
     };
 
     return (

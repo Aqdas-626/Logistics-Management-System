@@ -2,6 +2,7 @@ import JobLineFinancials from '@/Components/Job/JobLineFinancials';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 const TEAL = '#20A4AC';
 const SECTION_HEADER_BG = '#279ca1';
@@ -45,9 +46,12 @@ export default function Show({
     };
 
     const onDelete = () => {
-        if (confirm('Delete this swing job?')) {
+        confirmDelete({
+            message: 'Delete this swing job?',
+            onConfirm: () => {
             router.delete(route('swings.destroy', swingJob.id));
-        }
+            },
+        });
     };
 
     const tabs = [

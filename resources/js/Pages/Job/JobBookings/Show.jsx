@@ -1,5 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, router } from '@inertiajs/react';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 const get = (obj, a) => obj?.[a];
 
@@ -52,9 +53,12 @@ export default function Show({ jobBooking }) {
 
     const handleDelete = () => {
         if (!jobBooking?.id) return;
-        if (confirm('Are you sure you want to delete this job booking?')) {
+        confirmDelete({
+            message: 'Are you sure you want to delete this job booking?',
+            onConfirm: () => {
             router.delete(route('job-bookings.destroy', jobBooking.id));
-        }
+            },
+        });
     };
 
     return (

@@ -11,6 +11,7 @@ import {
     TrashIcon,
 } from '@/Components/Icons';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ departments, companies, branches, filters }) {
     const { flash } = usePage().props;
@@ -29,9 +30,12 @@ export default function Index({ departments, companies, branches, filters }) {
     };
 
     const destroy = (id) => {
-        if (confirm('Delete this department?')) {
+        confirmDelete({
+            message: 'Delete this department?',
+            onConfirm: () => {
             router.delete(route('departments.destroy', id));
-        }
+            },
+        });
     };
 
     const branchOptions = data.company_id

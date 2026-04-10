@@ -3,6 +3,7 @@ import LocationTable from '@/Components/Location/LocationTable';
 import { MagnifyingGlassIcon, PlusIcon } from '@/Components/Icons';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ locations, filters }) {
     const { flash } = usePage().props;
@@ -10,9 +11,12 @@ export default function Index({ locations, filters }) {
     const [statusFilter, setStatusFilter] = useState(filters.status || '');
 
     const handleDelete = (id) => {
-        if (confirm('Are you sure you want to delete this location?')) {
+        confirmDelete({
+            message: 'Are you sure you want to delete this location?',
+            onConfirm: () => {
             router.delete(route('locations.destroy', id));
-        }
+            },
+        });
     };
 
     const handleSearch = (e) => {

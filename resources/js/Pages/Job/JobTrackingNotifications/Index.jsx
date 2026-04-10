@@ -3,14 +3,18 @@ import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 import JobTrackingNotificationTable from '@/Components/Job/JobTrackingNotificationTable';
 import { ArrowRightIcon, MagnifyingGlassIcon } from '@/Components/Icons';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ jobTrackingNotifications, filters }) {
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
 
     const handleDelete = (id) => {
-        if (confirm('Are you sure you want to delete this job tracking notification?')) {
+        confirmDelete({
+            message: 'Are you sure you want to delete this job tracking notification?',
+            onConfirm: () => {
             router.delete(route('job-tracking-notifications.destroy', id));
-        }
+            },
+        });
     };
 
     const handleSearch = (e) => {

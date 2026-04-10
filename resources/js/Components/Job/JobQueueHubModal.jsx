@@ -1,6 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { useForm } from '@inertiajs/react';
-import { Fragment, useEffect } from 'react';
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { XMarkIcon } from '@/Components/Icons';
 
 const HEADER_BG = '#17A2B8';
@@ -22,15 +22,49 @@ function IconLocationPin(props) {
 
 export default function JobQueueHubModal({ isOpen, onClose, queue, locations = [] }) {
     const q = queue || {};
+    const [locationSearch, setLocationSearch] = useState('');
+    const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
+    const locationDropdownRef = useRef(null);
     const { data, setData, post, processing, errors, reset } = useForm({
         location_id: '',
         is_charge_customer: false,
     });
 
+    const filteredLocations = useMemo(() => {
+        const query = locationSearch.trim().toLowerCase();
+        if (!query) return locations;
+        return locations.filter((loc) => {
+            const name = String(loc.name || '').toLowerCase();
+            const code = String(loc.location_code || '').toLowerCase();
+            return name.includes(query) || code.includes(query);
+        });
+    }, [locations, locationSearch]);
+
     useEffect(() => {
         if (!isOpen) return;
         reset();
+        setLocationSearch('');
+        setIsLocationDropdownOpen(false);
     }, [isOpen, q.id, reset]);
+
+    useEffect(() => {
+        const selected = locations.find((loc) => String(loc.id) === String(data.location_id));
+        if (selected) {
+            setLocationSearch(`${selected.name}${selected.location_code ? ` (${selected.location_code})` : ''}`);
+        } else if (!data.location_id) {
+            setLocationSearch('');
+        }
+    }, [locations, data.location_id]);
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (locationDropdownRef.current && !locationDropdownRef.current.contains(event.target)) {
+                setIsLocationDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
 
     const submit = (e) => {
         e.preventDefault();
@@ -88,23 +122,56 @@ export default function JobQueueHubModal({ isOpen, onClose, queue, locations = [
                                         <label htmlFor="hub_location" className="text-xs text-gray-600">
                                             Location <span className="text-red-500">*</span>
                                         </label>
-                                        <div className="mt-1 flex items-center gap-2 border-b border-[#17A2B8] pb-1">
+                                        <div className="relative mt-1 flex items-center gap-2 border-b border-[#17A2B8] pb-1" ref={locationDropdownRef}>
                                             <IconLocationPin className="h-4 w-4 text-[#17A2B8]" />
-                                            <select
+                                            <input
                                                 id="hub_location"
+                                                type="text"
                                                 className="w-full border-0 bg-transparent p-0 text-sm text-gray-800 focus:outline-none focus:ring-0"
-                                                value={data.location_id}
-                                                onChange={(e) => setData('location_id', e.target.value)}
+                                                placeholder="Search location..."
+                                                value={locationSearch}
+                                                onFocus={() => setIsLocationDropdownOpen(true)}
+                                                onChange={(e) => {
+                                                    setLocationSearch(e.target.value);
+                                                    setData('location_id', '');
+                                                    setIsLocationDropdownOpen(true);
+                                                }}
                                                 required
-                                            >
-                                                <option value="">Select location</option>
-                                                {locations.map((loc) => (
-                                                    <option key={loc.id} value={loc.id}>
-                                                        {loc.name}
-                                                        {loc.location_code ? ` (${loc.location_code})` : ''}
-                                                    </option>
-                                                ))}
-                                            </select>
+                                            />
+
+                                            {isLocationDropdownOpen && (
+                                                <div className="absolute left-0 top-full z-20 mt-1 max-h-44 w-full overflow-auto rounded border border-gray-300 bg-white shadow-lg">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setData('location_id', '');
+                                                            setLocationSearch('');
+                                                            setIsLocationDropdownOpen(false);
+                                                        }}
+                                                        className="w-full border-b border-gray-100 px-3 py-2 text-left text-sm text-gray-600 hover:bg-gray-50"
+                                                    >
+                                                        Select location
+                                                    </button>
+                                                    {filteredLocations.map((loc) => (
+                                                        <button
+                                                            key={loc.id}
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setData('location_id', String(loc.id));
+                                                                setLocationSearch(`${loc.name}${loc.location_code ? ` (${loc.location_code})` : ''}`);
+                                                                setIsLocationDropdownOpen(false);
+                                                            }}
+                                                            className={`w-full px-3 py-2 text-left text-sm hover:bg-[#1a8d95] hover:text-white ${String(data.location_id) === String(loc.id) ? 'bg-[#20A4AC] text-white' : 'text-gray-700'}`}
+                                                        >
+                                                            {loc.name}
+                                                            {loc.location_code ? ` (${loc.location_code})` : ''}
+                                                        </button>
+                                                    ))}
+                                                    {!filteredLocations.length && (
+                                                        <div className="px-3 py-2 text-sm text-gray-500">No location found</div>
+                                                    )}
+                                                </div>
+                                            )}
                                         </div>
                                         {errors.location_id && <p className="mt-1 text-xs text-red-600">{errors.location_id}</p>}
                                     </div>

@@ -2,6 +2,7 @@ import JobLineFinancials from '@/Components/Job/JobLineFinancials';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 const TEAL = '#20A4AC';
 /** Job Details section card headers (matches provided teal swatch) */
@@ -43,9 +44,12 @@ export default function Show({
     };
 
     const onDelete = () => {
-        if (confirm(`Delete this ${entityLabel.toLowerCase()} job?`)) {
-            router.delete(route(`${routeName}.destroy`, importJob.id));
-        }
+        confirmDelete({
+            message: `Delete this ${entityLabel.toLowerCase()} job?`,
+            onConfirm: () => {
+                router.delete(route(`${routeName}.destroy`, importJob.id));
+            },
+        });
     };
 
     const tabs = [

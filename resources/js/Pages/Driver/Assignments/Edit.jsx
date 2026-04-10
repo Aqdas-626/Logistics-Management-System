@@ -6,6 +6,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
 import { Head, Link, router, useForm } from '@inertiajs/react';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Edit({ assignment, companies, drivers, vehicles }) {
     const normalizeDate = (value) => {
@@ -30,9 +31,12 @@ export default function Edit({ assignment, companies, drivers, vehicles }) {
     };
 
     const destroy = () => {
-        if (confirm('Delete this assignment?')) {
+        confirmDelete({
+            message: 'Delete this assignment?',
+            onConfirm: () => {
             router.delete(route('driver-vehicle-assignments.destroy', assignment.id));
-        }
+            },
+        });
     };
 
     const filteredDrivers = drivers.filter(

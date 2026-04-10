@@ -23,9 +23,15 @@ export default function ChargeTypeModal({ isOpen, onClose, chargeType }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (chargeType) {
-            put(route('charge-types.update', chargeType.id));
+            put(route('charge-types.update', chargeType.id), {
+                preserveScroll: true,
+                onSuccess: () => handleClose(),
+            });
         } else {
-            post(route('charge-types.store'));
+            post(route('charge-types.store'), {
+                preserveScroll: true,
+                onSuccess: () => handleClose(),
+            });
         }
     };
 
@@ -43,9 +49,20 @@ export default function ChargeTypeModal({ isOpen, onClose, chargeType }) {
                     <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                         <div className="sm:flex sm:items-start">
                             <div className="mt-3 flex-grow sm:ml-4 sm:mt-0">
+                                <div className="flex justify-between items-center">
                                 <h3 className="text-base font-semibold leading-6 text-gray-900">
                                     {chargeType ? 'Edit Charge Type' : 'New Charge Type'}
                                 </h3>
+                                <button
+                                    type="button"
+                                    disabled={processing}
+                                    onClick={handleClose}
+                                    aria-label="Close modal"
+                                    className="inline-flex items-center justify-center rounded-md bg-[#20A4AC] p-2 text-white shadow-sm transition hover:bg-[#1a8d95] disabled:opacity-50"
+                                >
+                                    <XMarkIcon className="h-4 w-4" />
+                                </button>
+                                </div>
                                 <form onSubmit={handleSubmit} className="mt-4 space-y-4">
                                     <div>
                                         <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-gray-700">
@@ -83,15 +100,7 @@ export default function ChargeTypeModal({ isOpen, onClose, chargeType }) {
                         </div>
                     </div>
                     <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                        <button
-                            type="button"
-                            disabled={processing}
-                            onClick={handleClose}
-                            className="inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50"
-                        >
-                            <XMarkIcon className="-ml-1 mr-1 h-4 w-4" />
-                            Cancel
-                        </button>
+                        
                         <button
                             type="button"
                             disabled={processing}

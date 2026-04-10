@@ -4,6 +4,7 @@ import { useState } from 'react';
 import DgSignatoryModal from '@/Components/Job/DgSignatoryModal';
 import DgSignatoryTable from '@/Components/Job/DgSignatoryTable';
 import { PlusIcon, MagnifyingGlassIcon } from '@/Components/Icons';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ dgSignatories, filters }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,9 +22,12 @@ export default function Index({ dgSignatories, filters }) {
     };
 
     const handleDelete = (id) => {
-        if (confirm('Are you sure you want to delete this DG signatory?')) {
+        confirmDelete({
+            message: 'Are you sure you want to delete this DG signatory?',
+            onConfirm: () => {
             router.delete(route('dg-signatories.destroy', id));
-        }
+            },
+        });
     };
 
     const handleSearch = (e) => {

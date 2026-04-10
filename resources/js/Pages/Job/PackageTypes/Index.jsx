@@ -8,6 +8,7 @@ import {
     MagnifyingGlassIcon,
     PlusIcon,
 } from '@/Components/Icons';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ packageTypes, filters }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,9 +26,12 @@ export default function Index({ packageTypes, filters }) {
     };
 
     const handleDelete = (id) => {
-        if (confirm('Are you sure you want to delete this package type?')) {
+        confirmDelete({
+            message: 'Are you sure you want to delete this package type?',
+            onConfirm: () => {
             router.delete(route('package-types.destroy', id));
-        }
+            },
+        });
     };
 
     const handleSearch = (e) => {

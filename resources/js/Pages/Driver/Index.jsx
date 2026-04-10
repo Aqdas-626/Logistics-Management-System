@@ -5,6 +5,7 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ drivers, filters }) {
     const { flash } = usePage().props;
@@ -22,9 +23,12 @@ export default function Index({ drivers, filters }) {
     };
 
     const destroy = (id) => {
-        if (confirm('Delete this driver?')) {
+        confirmDelete({
+            message: 'Delete this driver?',
+            onConfirm: () => {
             router.delete(route('drivers.destroy', id));
-        }
+            },
+        });
     };
 
     const toggleActions = (id) => {

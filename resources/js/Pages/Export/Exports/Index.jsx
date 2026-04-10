@@ -9,14 +9,18 @@ import {
     PlusIcon,
     TrashIcon,
 } from '@/Components/Icons';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ exports, filters }) {
     const [searchTerm, setSearchTerm] = useState(filters?.search || '');
 
     const onDelete = (id) => {
-        if (confirm('Delete this export job?')) {
+        confirmDelete({
+            message: 'Delete this export job?',
+            onConfirm: () => {
             router.delete(route('exports.destroy', id));
-        }
+            },
+        });
     };
 
     const onSearch = (e) => {

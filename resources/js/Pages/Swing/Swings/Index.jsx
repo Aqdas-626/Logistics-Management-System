@@ -9,14 +9,18 @@ import {
     PlusIcon,
     TrashIcon,
 } from '@/Components/Icons';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ swings, filters }) {
     const [searchTerm, setSearchTerm] = useState(filters?.search || '');
 
     const onDelete = (id) => {
-        if (confirm('Delete this swing job?')) {
+        confirmDelete({
+            message: 'Delete this swing job?',
+            onConfirm: () => {
             router.delete(route('swings.destroy', id));
-        }
+            },
+        });
     };
 
     const onSearch = (e) => {

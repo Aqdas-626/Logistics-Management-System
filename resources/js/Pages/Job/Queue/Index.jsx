@@ -9,6 +9,7 @@ import TextInput from '@/Components/TextInput';
 import { EyeIcon, PencilIcon, TrashIcon } from '@/Components/Icons';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 const TEAL = '#17a2b8';
 
@@ -267,14 +268,16 @@ export default function Index({
 
     const handleDelete = (queue) => {
         if (!queue?.id) return;
-        const ok = confirm('Delete this job completely? This will remove the job, containers, and related records.');
-        if (!ok) return;
-
-        router.delete(route('job-queues.destroy', queue.id), {
-            onSuccess: () => {
-                // Re-fetch the list while keeping current filters.
-                const nextPage = jobQueues?.current_page ?? 1;
-                router.get(route('job-queues.index'), { ...filterQuery(), page: nextPage }, { preserveState: false, replace: true });
+        confirmDelete({
+            message: 'Delete this job completely? This will remove the job, containers, and related records.',
+            onConfirm: () => {
+                router.delete(route('job-queues.destroy', queue.id), {
+                    onSuccess: () => {
+                        // Re-fetch the list while keeping current filters.
+                        const nextPage = jobQueues?.current_page ?? 1;
+                        router.get(route('job-queues.index'), { ...filterQuery(), page: nextPage }, { preserveState: false, replace: true });
+                    },
+                });
             },
         });
     };

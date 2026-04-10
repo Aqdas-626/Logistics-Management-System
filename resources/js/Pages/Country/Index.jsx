@@ -4,6 +4,7 @@ import TextInput from '@/Components/TextInput';
 import InputLabel from '@/Components/InputLabel';
 import { EyeIcon, PencilIcon, TrashIcon } from '@/Components/Icons';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ countries, filters }) {
     const { flash } = usePage().props;
@@ -20,9 +21,12 @@ export default function Index({ countries, filters }) {
     };
 
     const destroy = (id) => {
-        if (confirm('Delete this country?')) {
+        confirmDelete({
+            message: 'Delete this country?',
+            onConfirm: () => {
             router.delete(route('countries.destroy', id));
-        }
+            },
+        });
     };
 
     return (

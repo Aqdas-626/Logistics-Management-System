@@ -6,6 +6,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
 import { Head, Link, router, useForm } from '@inertiajs/react';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Edit({ driver, companies }) {
     const { data, setData, put, processing, errors } = useForm({
@@ -27,9 +28,12 @@ export default function Edit({ driver, companies }) {
     };
 
     const destroy = () => {
-        if (confirm('Delete this driver?')) {
+        confirmDelete({
+            message: 'Delete this driver?',
+            onConfirm: () => {
             router.delete(route('drivers.destroy', driver.id));
-        }
+            },
+        });
     };
 
     return (

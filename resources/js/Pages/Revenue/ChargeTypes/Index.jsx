@@ -8,6 +8,7 @@ import {
 import ChargeTypeModal from '@/Components/Revenue/ChargeTypeModal';
 import ChargeTypeTable from '@/Components/Revenue/ChargeTypeTable';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ chargeTypes, filters }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,9 +26,12 @@ export default function Index({ chargeTypes, filters }) {
     };
 
     const handleDelete = (id) => {
-        if (confirm('Are you sure you want to delete this charge type?')) {
+        confirmDelete({
+            message: 'Are you sure you want to delete this charge type?',
+            onConfirm: () => {
             router.delete(route('charge-types.destroy', id));
-        }
+            },
+        });
     };
 
     const handleSearch = (e) => {

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import DgTypeModal from '@/Components/Job/DgTypeModal';
 import DgTypeTable from '@/Components/Job/DgTypeTable';
 import { PlusIcon, MagnifyingGlassIcon } from '@/Components/Icons';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ dgTypes, filters }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,9 +22,12 @@ export default function Index({ dgTypes, filters }) {
     };
 
     const handleDelete = (id) => {
-        if (confirm('Are you sure you want to delete this DG type?')) {
+        confirmDelete({
+            message: 'Are you sure you want to delete this DG type?',
+            onConfirm: () => {
             router.delete(route('dg-types.destroy', id));
-        }
+            },
+        });
     };
 
     const handleSearch = (e) => {

@@ -8,6 +8,7 @@ import {
 import RevenueTypeModal from '@/Components/Revenue/RevenueTypeModal';
 import RevenueTypeTable from '@/Components/Revenue/RevenueTypeTable';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ revenueTypes, filters }) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,9 +26,12 @@ export default function Index({ revenueTypes, filters }) {
     };
 
     const handleDelete = (id) => {
-        if (confirm('Are you sure you want to delete this revenue type?')) {
+        confirmDelete({
+            message: 'Are you sure you want to delete this revenue type?',
+            onConfirm: () => {
             router.delete(route('revenue-types.destroy', id));
-        }
+            },
+        });
     };
 
     const handleSearch = (e) => {

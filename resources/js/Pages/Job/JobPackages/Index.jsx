@@ -3,14 +3,18 @@ import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 import JobPackageTable from '@/Components/Job/JobPackageTable';
 import { ArrowRightIcon, MagnifyingGlassIcon } from '@/Components/Icons';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ jobPackages, filters }) {
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
 
     const handleDelete = (id) => {
-        if (confirm('Are you sure you want to delete this job package?')) {
+        confirmDelete({
+            message: 'Are you sure you want to delete this job package?',
+            onConfirm: () => {
             router.delete(route('job-packages.destroy', id));
-        }
+            },
+        });
     };
 
     const handleSearch = (e) => {

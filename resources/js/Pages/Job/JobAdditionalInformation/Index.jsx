@@ -6,14 +6,18 @@ import {
     ArrowRightIcon,
     MagnifyingGlassIcon,
 } from '@/Components/Icons';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ jobAdditionalInformation, filters }) {
     const [searchTerm, setSearchTerm] = useState(filters.search || '');
 
     const handleDelete = (id) => {
-        if (confirm('Are you sure you want to delete this job additional information?')) {
+        confirmDelete({
+            message: 'Are you sure you want to delete this job additional information?',
+            onConfirm: () => {
             router.delete(route('job-additional-information.destroy', id));
-        }
+            },
+        });
     };
 
     const handleSearch = (e) => {

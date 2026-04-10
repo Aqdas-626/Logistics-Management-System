@@ -1,4 +1,5 @@
 import { Link } from '@inertiajs/react';
+import { PencilIcon, TrashIcon } from '@/Components/Icons';
 
 export default function LocationTable({ locations, onDelete }) {
     return (
@@ -55,16 +56,20 @@ export default function LocationTable({ locations, onDelete }) {
                                         'locations.edit',
                                         location.id,
                                     )}
-                                    className="mr-3 text-[#20A4AC] hover:text-[#0d4f54]"
+                                    className="mr-3 inline-flex text-[#20A4AC] hover:text-[#0d4f54]"
+                                    title="Edit"
+                                    aria-label="Edit location"
                                 >
-                                    Edit
+                                    <PencilIcon className="h-4 w-4" />
                                 </Link>
                                 <button
                                     type="button"
                                     onClick={() => onDelete(location.id)}
-                                    className="text-red-600 hover:text-red-900"
+                                    className="inline-flex text-red-600 hover:text-red-900"
+                                    title="Delete"
+                                    aria-label="Delete location"
                                 >
-                                    Delete
+                                    <TrashIcon className="h-4 w-4" />
                                 </button>
                             </td>
                         </tr>

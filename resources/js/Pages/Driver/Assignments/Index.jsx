@@ -9,6 +9,7 @@ import {
     TrashIcon,
 } from '@/Components/Icons';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ assignments, filters }) {
     const { flash } = usePage().props;
@@ -22,9 +23,12 @@ export default function Index({ assignments, filters }) {
     };
 
     const destroy = (id) => {
-        if (confirm('Delete this assignment?')) {
+        confirmDelete({
+            message: 'Delete this assignment?',
+            onConfirm: () => {
             router.delete(route('driver-vehicle-assignments.destroy', id));
-        }
+            },
+        });
     };
 
     const formatDate = (value) => {

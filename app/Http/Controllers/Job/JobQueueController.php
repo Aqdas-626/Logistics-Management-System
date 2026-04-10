@@ -3,27 +3,28 @@
 namespace App\Http\Controllers\Job;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cart;
+use App\Models\ChargeType;
 use App\Models\Container;
+use App\Models\Customer;
 use App\Models\Dispatch;
 use App\Models\DriverVehicleAssignment;
-use App\Models\JobQueue;
-use App\Models\ChargeType;
-use App\Models\Customer;
 use App\Models\Endorsement;
-use App\Models\JobNote;
-use App\Models\Location;
-use App\Models\Import;
 use App\Models\Export;
-use App\Models\Cart;
-use App\Models\Swing;
+use App\Models\Import;
 use App\Models\JobDocument;
-use Carbon\Carbon;
+use App\Models\JobNote;
+use App\Models\JobQueue;
+use App\Models\JobStatusHistory;
+use App\Models\Location;
+use App\Models\Swing;
 use App\Support\JobFinancialShowData;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -63,14 +64,14 @@ class JobQueueController extends Controller
                 $query->where('status', $status);
             } else {
                 $typeMap = [
-                    \App\Models\Import::class => 'import',
-                    \App\Models\Export::class => 'export',
-                    \App\Models\Cart::class => 'cart',
-                    \App\Models\Swing::class => 'swing',
+                    Import::class => 'import',
+                    Export::class => 'export',
+                    Cart::class => 'cart',
+                    Swing::class => 'swing',
                 ];
 
                 $jobQueueTable = $query->getModel()->getTable(); // job_queues
-                $containerTable = (new Container())->getTable(); // containers
+                $containerTable = (new Container)->getTable(); // containers
 
                 $containerScope = match ($status) {
                     'URGENT' => function ($c) {
@@ -99,8 +100,8 @@ class JobQueueController extends Controller
                                 $qq->where('jobable_type', $jobableType)
                                     ->whereExists(function ($sub) use ($jobType, $containerScope, $jobQueueTable, $containerTable) {
                                         $containerScope($sub->selectRaw('1')->from($containerTable)
-                                            ->whereColumn($containerTable . '.job_id', $jobQueueTable . '.jobable_id')
-                                            ->where($containerTable . '.job_type', $jobType));
+                                            ->whereColumn($containerTable.'.job_id', $jobQueueTable.'.jobable_id')
+                                            ->where($containerTable.'.job_type', $jobType));
                                     });
                             });
                         }
@@ -118,12 +119,12 @@ class JobQueueController extends Controller
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
-                $q->where('status', 'like', '%' . $search . '%')
-                    ->orWhere('jobable_type', 'like', '%' . $search . '%')
-                    ->orWhere('jobable_id', 'like', '%' . $search . '%')
+                $q->where('status', 'like', '%'.$search.'%')
+                    ->orWhere('jobable_type', 'like', '%'.$search.'%')
+                    ->orWhere('jobable_id', 'like', '%'.$search.'%')
                     ->orWhereHas('jobable', function ($jobableQuery) use ($search) {
-                        $jobableQuery->where('job_number', 'like', '%' . $search . '%')
-                            ->orWhere('job_no', 'like', '%' . $search . '%');
+                        $jobableQuery->where('job_number', 'like', '%'.$search.'%')
+                            ->orWhere('job_no', 'like', '%'.$search.'%');
                     });
             });
         }
@@ -196,10 +197,10 @@ class JobQueueController extends Controller
             ],
             'statusOptions' => self::STATUSES,
             'movementTypeOptions' => [
-                \App\Models\Import::class => 'Import',
-                \App\Models\Export::class => 'Export',
-                \App\Models\Cart::class => 'Cart',
-                \App\Models\Swing::class => 'Swing',
+                Import::class => 'Import',
+                Export::class => 'Export',
+                Cart::class => 'Cart',
+                Swing::class => 'Swing',
             ],
             'statusCounts' => $statusCounts,
             'dispatchAssignments' => DriverVehicleAssignment::query()
@@ -292,9 +293,11 @@ class JobQueueController extends Controller
             'notes' => $validated['notes'] ?? null,
         ]);
 
+        $oldStatus = $jobQueue->status;
         $jobQueue->update([
             'status' => 'IN_PROCESS',
         ]);
+        $this->recordStatusHistory($jobQueue, $oldStatus, 'IN_PROCESS', $request->user()?->id);
 
         return redirect()->route('job-queues.index')->with('success', 'Job dispatched successfully.');
     }
@@ -305,9 +308,12 @@ class JobQueueController extends Controller
             'status' => ['required', 'string', Rule::in(self::STATUSES)],
         ]);
 
+        $oldStatus = $jobQueue->status;
         $jobQueue->update([
             'status' => $validated['status'],
         ]);
+
+        $this->recordStatusHistory($jobQueue, $oldStatus, $validated['status'], $request->user()?->id);
 
         if ($validated['status'] === 'DELIVERED') {
             $jobQueue->latestDispatch?->update([
@@ -375,7 +381,7 @@ class JobQueueController extends Controller
             $container->update($containerPayload);
         }
 
-        if ($jobable && array_key_exists('customer_code', $validated) && !empty($validated['customer_code'])) {
+        if ($jobable && array_key_exists('customer_code', $validated) && ! empty($validated['customer_code'])) {
             $customer = Customer::query()->where('customer_code', $validated['customer_code'])->first();
             if ($customer) {
                 $jobable->customer_id = $customer->id;
@@ -384,7 +390,9 @@ class JobQueueController extends Controller
         }
 
         if ($validated['status'] ?? null) {
+            $oldStatus = $jobQueue->status;
             $jobQueue->update(['status' => $validated['status']]);
+            $this->recordStatusHistory($jobQueue, $oldStatus, $validated['status'], $request->user()?->id);
             if ($validated['status'] === 'DELIVERED') {
                 $jobQueue->latestDispatch?->update([
                     'completed_at' => now(),
@@ -410,7 +418,7 @@ class JobQueueController extends Controller
             $jobableId = $jobQueue->jobable_id;
 
             switch ($jobableType) {
-                case Import::class: {
+                case Import::class:
                     $jobable = Import::withTrashed()->find($jobableId);
                     if ($jobable) {
                         $jobable->revenues()->delete();
@@ -422,8 +430,8 @@ class JobQueueController extends Controller
                         $jobable->delete();
                     }
                     break;
-                }
-                case Export::class: {
+
+                case Export::class:
                     $jobable = Export::withTrashed()->find($jobableId);
                     if ($jobable) {
                         $jobable->revenues()->delete();
@@ -435,8 +443,8 @@ class JobQueueController extends Controller
                         $jobable->delete();
                     }
                     break;
-                }
-                case Cart::class: {
+
+                case Cart::class:
                     $jobable = Cart::withTrashed()->find($jobableId);
                     if ($jobable) {
                         $jobable->revenues()->delete();
@@ -448,8 +456,8 @@ class JobQueueController extends Controller
                         $jobable->delete();
                     }
                     break;
-                }
-                case Swing::class: {
+
+                case Swing::class:
                     $jobable = Swing::withTrashed()->find($jobableId);
                     if ($jobable) {
                         $jobable->revenues()->delete();
@@ -461,17 +469,19 @@ class JobQueueController extends Controller
                         $jobable->delete();
                     }
                     break;
-                }
+
             }
 
             // Always remove the queue record itself.
             $jobQueue->delete();
 
             DB::commit();
+
             return redirect()->route('job-queues.index')->with('success', 'Job deleted successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Failed to delete job: ' . $e->getMessage()]);
+
+            return back()->withErrors(['error' => 'Failed to delete job: '.$e->getMessage()]);
         }
     }
 
@@ -495,14 +505,14 @@ class JobQueueController extends Controller
     private function resolveContainerForQueue(JobQueue $queue): ?Container
     {
         $typeMap = [
-            \App\Models\Import::class => 'import',
-            \App\Models\Export::class => 'export',
-            \App\Models\Cart::class => 'cart',
-            \App\Models\Swing::class => 'swing',
+            Import::class => 'import',
+            Export::class => 'export',
+            Cart::class => 'cart',
+            Swing::class => 'swing',
         ];
 
         $jobType = $typeMap[$queue->jobable_type] ?? null;
-        if (!$jobType) {
+        if (! $jobType) {
             return null;
         }
 
@@ -519,10 +529,25 @@ class JobQueueController extends Controller
 
     private function calculateDoAfterDate(?Container $container): ?string
     {
-        if (!$container?->available_date || !$container?->detention_days) {
+        if (! $container?->available_date || ! $container?->detention_days) {
             return null;
         }
 
         return Carbon::parse($container->available_date)->addDays((int) $container->detention_days)->toDateString();
+    }
+
+    private function recordStatusHistory(JobQueue $jobQueue, ?string $oldStatus, string $newStatus, ?int $changedBy): void
+    {
+        if ($oldStatus === $newStatus) {
+            return;
+        }
+
+        JobStatusHistory::query()->create([
+            'job_queue_id' => $jobQueue->id,
+            'old_status' => $oldStatus,
+            'new_status' => $newStatus,
+            'changed_by' => $changedBy,
+            'changed_at' => now(),
+        ]);
     }
 }

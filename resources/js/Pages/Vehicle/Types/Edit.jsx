@@ -20,7 +20,16 @@ export default function Edit({ vehicleType }) {
 
     return (
         <AuthenticatedLayout
-            header={<h2 className="text-xl font-semibold leading-tight text-gray-800">Edit Vehicle Type</h2>}
+            header={
+               <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <h2 className="text-xl font-semibold leading-tight text-gray-800">Edit Vehicle Type</h2>
+                    <Link href={route('vehicle-types.index')}>
+                        <SecondaryButton type="button">Cancel</SecondaryButton>
+                    </Link>
+                </div>
+               </div>
+            }
         >
             <Head title="Edit Vehicle Type" />
 

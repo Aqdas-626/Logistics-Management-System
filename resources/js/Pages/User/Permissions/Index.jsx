@@ -4,6 +4,7 @@ import TextInput from '@/Components/TextInput';
 import InputLabel from '@/Components/InputLabel';
 import DangerButton from '@/Components/DangerButton';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ permissions, filters }) {
     const { flash } = usePage().props;
@@ -20,9 +21,12 @@ export default function Index({ permissions, filters }) {
     };
 
     const destroy = (id) => {
-        if (confirm('Delete this permission?')) {
+        confirmDelete({
+            message: 'Delete this permission?',
+            onConfirm: () => {
             router.delete(route('permissions.destroy', id));
-        }
+            },
+        });
     };
 
     return (

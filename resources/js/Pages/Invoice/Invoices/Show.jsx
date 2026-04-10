@@ -1,5 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, router, useForm } from '@inertiajs/react';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 const formatDate = (value) => {
     if (!value) return '-';
@@ -30,8 +31,12 @@ export default function Show({ invoice }) {
     };
 
     const deletePayment = (paymentId) => {
-        if (!confirm('Remove this payment?')) return;
-        router.delete(route('invoices.payments.destroy', [invoice.id, paymentId]));
+        confirmDelete({
+            message: 'Remove this payment?',
+            onConfirm: () => {
+            router.delete(route('invoices.payments.destroy', [invoice.id, paymentId]));
+            },
+        });
     };
 
     return (

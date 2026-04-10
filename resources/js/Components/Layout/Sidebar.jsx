@@ -23,6 +23,12 @@ export default function Sidebar() {
             children: null,
         },
         {
+            icon: SparklesIcon,
+            label: 'Reports',
+            href: route('reports.index'),
+            children: null,
+        },
+        {
             icon: UserGroupIcon,
             label: 'Customers',
             href: route('customers.index'),
@@ -118,6 +124,7 @@ export default function Sidebar() {
                 { label: 'Job Tracking Notifications', href: route('job-tracking-notifications.index') },
                 { label: 'Job Additional Information', href: route('job-additional-information.index') },
                 { label: 'Job Queue', href: route('job-queues.index') },
+                { label: 'Job Status History', href: route('job-status-histories.index') },
                 { label: 'Job Bookings', href: route('job-bookings.index') },
                 { label: 'Import Jobs', href: route('imports.index') },
                 { label: 'Export Jobs', href: route('exports.index') },
@@ -152,8 +159,19 @@ export default function Sidebar() {
     };
 
     return (
-        <aside className={`fixed left-0 top-0 z-40 h-screen bg-gradient-to-b from-slate-900 to-slate-800 pt-20 shadow-2xl transition-all duration-300 flex flex-col ${isOpen ? 'w-64' : 'w-20'}`}>
-            <nav className="flex-1 space-y-2 overflow-y-auto px-4 py-6 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <aside className={`fixed left-0 top-0 z-40 flex h-screen flex-col border-r border-gray-200 bg-white shadow-lg transition-all duration-300 ${isOpen ? 'w-64' : 'w-20'}`}>
+            <div className={`flex items-center gap-3 border-b border-gray-200 px-4 py-4 ${isOpen ? 'justify-start' : 'justify-center'}`}>
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-r from-[#20A4AC] to-purple-600">
+                    <span className="text-lg font-bold text-white">📦</span>
+                </div>
+                {isOpen && (
+                    <div>
+                        <h1 className="text-base font-bold text-gray-800">Logistic ERP</h1>
+                        <p className="text-[11px] text-gray-500">Management System</p>
+                    </div>
+                )}
+            </div>
+            <nav className="flex-1 space-y-2 overflow-y-auto px-3 py-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {menuItems.map((item, index) => {
                     const Icon = item.icon;
                     const hasChildren = item.children && item.children.length > 0;
@@ -161,16 +179,26 @@ export default function Sidebar() {
 
                     return (
                         <div key={index}>
+                            {index === 2 && (
+                                <div
+                                    className={`px-2 pb-1 pt-2 text-xs font-semibold tracking-wide text-gray-400 ${
+                                        isOpen ? 'text-left' : 'text-center'
+                                    }`}
+                                >
+                                    {isOpen ? '---- Master Data ---' : '---'}
+                                </div>
+                            )}
                             {hasChildren ? (
                                 <button
                                     onClick={() => toggleExpand(index)}
                                     className={`group relative flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 ${
                                         isItemActive
-                                            ? 'bg-[#20A4AC] text-white shadow-lg'
-                                            : 'text-gray-300 hover:bg-slate-700 hover:text-white'
+                                            ? 'bg-[#0a98ff] text-white shadow-sm'
+                                            : 'text-slate-700 hover:bg-[#20A4AC]/15 hover:text-[#20A4AC]'
                                     } ${isOpen ? 'justify-start' : 'justify-center'}`}
                                     title={isOpen ? '' : item.label}
                                 >
+                                    
                                     <Icon className="h-5 w-5 flex-shrink-0" />
                                     {isOpen && (
                                         <>
@@ -186,8 +214,8 @@ export default function Sidebar() {
                                     href={item.href}
                                     className={`group relative flex w-full items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 ${
                                         isItemActive
-                                            ? 'bg-[#20A4AC] text-white shadow-lg'
-                                            : 'text-gray-300 hover:bg-slate-700 hover:text-white'
+                                            ? 'bg-[#0a98ff] text-white shadow-sm'
+                                            : 'text-slate-700 hover:bg-[#20A4AC]/15 hover:text-[#20A4AC]'
                                     } ${isOpen ? 'justify-start' : 'justify-center'}`}
                                     title={isOpen ? '' : item.label}
                                 >
@@ -197,15 +225,15 @@ export default function Sidebar() {
                             )}
 
                             {hasChildren && expandedMenu === index && isOpen && (
-                                <div className="ml-2 mt-2 space-y-1 border-l-2 border-slate-700 pl-2">
+                                <div className="ml-2 mt-2 space-y-1 border-l-2 border-blue-100 pl-2">
                                     {item.children.map((child, childIndex) => (
                                         <Link
                                             key={childIndex}
                                             href={child.href}
                                             className={`block rounded-lg px-4 py-2 text-sm transition-colors ${
                                                 url.startsWith(child.href)
-                                                    ? 'bg-slate-600 text-white'
-                                                    : 'text-gray-400 hover:bg-slate-700 hover:text-white'
+                                                    ? 'bg-blue-50 font-semibold text-[#0a98ff]'
+                                                    : 'text-slate-600 hover:bg-[#20A4AC]/15 hover:text-[#20A4AC]'
                                             }`}
                                         >
                                             {child.label}

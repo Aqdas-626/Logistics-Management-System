@@ -2,6 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 import { PlusIcon, MagnifyingGlassIcon, PencilIcon, TrashIcon } from '@/Components/Icons';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ jobBookings, filters }) {
     const [searchTerm, setSearchTerm] = useState(filters?.search || '');
@@ -15,9 +16,12 @@ export default function Index({ jobBookings, filters }) {
     };
 
     const handleDelete = (id) => {
-        if (confirm('Are you sure you want to delete this job booking?')) {
+        confirmDelete({
+            message: 'Are you sure you want to delete this job booking?',
+            onConfirm: () => {
             router.delete(route('job-bookings.destroy', id));
-        }
+            },
+        });
     };
 
     const handleSearch = (e) => {

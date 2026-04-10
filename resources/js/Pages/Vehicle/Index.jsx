@@ -4,6 +4,7 @@ import InputLabel from '@/Components/InputLabel';
 import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 export default function Index({ vehicles, filters }) {
     const { flash } = usePage().props;
@@ -17,9 +18,12 @@ export default function Index({ vehicles, filters }) {
     };
 
     const destroy = (id) => {
-        if (confirm('Delete this vehicle?')) {
+        confirmDelete({
+            message: 'Delete this vehicle?',
+            onConfirm: () => {
             router.delete(route('vehicles.destroy', id));
-        }
+            },
+        });
     };
 
     return (
@@ -28,12 +32,12 @@ export default function Index({ vehicles, filters }) {
                 <div className="flex items-center justify-between">
                     <h2 className="text-xl font-semibold leading-tight text-gray-800">Vehicles</h2>
                     <Link
-                        href={route('vehicles.create')}
-                        className="inline-flex items-center rounded-md border border-transparent px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:opacity-90"
-                        style={{ backgroundColor: '#20A4AC' }}
-                    >
-                        Add Vehicle
-                    </Link>
+                            href={route('vehicles.create')}
+                            className="inline-flex items-center rounded-md border border-transparent px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:opacity-90"
+                            style={{ backgroundColor: '#20A4AC' }}
+                        >
+                            Create Vehicle
+                        </Link>
                 </div>
             }
         >
@@ -45,15 +49,7 @@ export default function Index({ vehicles, filters }) {
                         <div className="mb-4 rounded-md bg-green-50 p-4 text-green-800">{flash.success}</div>
                     )}
 
-                    <div className="mb-4 flex justify-end">
-                        <Link
-                            href={route('vehicles.create')}
-                            className="inline-flex items-center rounded-md border border-transparent px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:opacity-90"
-                            style={{ backgroundColor: '#20A4AC' }}
-                        >
-                            Create Vehicle
-                        </Link>
-                    </div>
+                
 
                     <form onSubmit={submitSearch} className="mb-6 flex items-end gap-4">
                         <div>
@@ -63,7 +59,7 @@ export default function Index({ vehicles, filters }) {
                                 className="mt-1 block w-64"
                                 value={data.search}
                                 onChange={(e) => setData('search', e.target.value)}
-                                placeholder="Registration no or VIN"
+                                placeholder="Reg no, VIN, chassis, engine..."
                             />
                         </div>
                         <SecondaryButton type="submit" disabled={processing}>
@@ -78,6 +74,8 @@ export default function Index({ vehicles, filters }) {
                                     <tr>
                                         <th className="px-3 py-2 text-left text-gray-700">Registration</th>
                                         <th className="px-3 py-2 text-left text-gray-700">Type</th>
+                                        <th className="px-3 py-2 text-left text-gray-700">Engine</th>
+                                        <th className="px-3 py-2 text-left text-gray-700">Fuel</th>
                                         <th className="px-3 py-2 text-left text-gray-700">Company</th>
                                         <th className="px-3 py-2 text-left text-gray-700">Branch</th>
                                         <th className="px-3 py-2 text-left text-gray-700">Status</th>
@@ -87,7 +85,7 @@ export default function Index({ vehicles, filters }) {
                                 <tbody className="divide-y divide-gray-100">
                                     {vehicles.data.length === 0 && (
                                         <tr>
-                                            <td colSpan={6} className="px-3 py-8 text-center text-gray-500">
+                                            <td colSpan={8} className="px-3 py-8 text-center text-gray-500">
                                                 No vehicles found.
                                             </td>
                                         </tr>
@@ -96,6 +94,12 @@ export default function Index({ vehicles, filters }) {
                                         <tr key={v.id}>
                                             <td className="px-3 py-2">{v.registration_no}</td>
                                             <td className="px-3 py-2">{v.vehicle_type?.name || '—'}</td>
+                                            <td className="px-3 py-2">{v.engine_no || '—'}</td>
+                                            <td className="px-3 py-2">
+                                                {v.fuel_type
+                                                    ? `${v.fuel_type}${v.fuel_capacity ? ` (${v.fuel_capacity})` : ''}`
+                                                    : '—'}
+                                            </td>
                                             <td className="px-3 py-2">{v.company?.name || '—'}</td>
                                             <td className="px-3 py-2">{v.branch?.name || '—'}</td>
                                             <td className="px-3 py-2">{v.status}</td>

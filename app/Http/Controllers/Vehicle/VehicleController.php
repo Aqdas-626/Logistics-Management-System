@@ -25,8 +25,12 @@ class VehicleController extends Controller
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
-                $q->where('registration_no', 'like', '%' . $search . '%')
-                    ->orWhere('vin', 'like', '%' . $search . '%');
+                $q->where('registration_no', 'like', '%'.$search.'%')
+                    ->orWhere('vin', 'like', '%'.$search.'%')
+                    ->orWhere('chassis_no', 'like', '%'.$search.'%')
+                    ->orWhere('engine_no', 'like', '%'.$search.'%')
+                    ->orWhere('color', 'like', '%'.$search.'%')
+                    ->orWhere('fuel_type', 'like', '%'.$search.'%');
             });
         }
 
@@ -60,6 +64,11 @@ class VehicleController extends Controller
                 }),
             ],
             'vin' => ['nullable', 'string', 'max:60'],
+            'chassis_no' => ['nullable', 'string', 'max:60'],
+            'engine_no' => ['nullable', 'string', 'max:60'],
+            'color' => ['nullable', 'string', 'max:60'],
+            'fuel_type' => ['nullable', Rule::in(['petrol', 'diesel', 'electric', 'hybrid'])],
+            'fuel_capacity' => ['nullable', 'numeric', 'min:0'],
             'status' => ['required', 'string', 'max:30'],
             'odometer_km' => ['nullable', 'numeric', 'min:0'],
         ]);
@@ -98,6 +107,11 @@ class VehicleController extends Controller
                     ->ignore($vehicle->id),
             ],
             'vin' => ['nullable', 'string', 'max:60'],
+            'chassis_no' => ['nullable', 'string', 'max:60'],
+            'engine_no' => ['nullable', 'string', 'max:60'],
+            'color' => ['nullable', 'string', 'max:60'],
+            'fuel_type' => ['nullable', Rule::in(['petrol', 'diesel', 'electric', 'hybrid'])],
+            'fuel_capacity' => ['nullable', 'numeric', 'min:0'],
             'status' => ['required', 'string', 'max:30'],
             'odometer_km' => ['nullable', 'numeric', 'min:0'],
         ]);
@@ -118,4 +132,3 @@ class VehicleController extends Controller
             ->with('success', 'Vehicle deleted successfully.');
     }
 }
-

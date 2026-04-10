@@ -1,7 +1,8 @@
 import { Dialog, Transition } from '@headlessui/react';
 import { PencilIcon, TrashIcon } from '@/Components/Icons';
 import { router, useForm } from '@inertiajs/react';
-import { Fragment, useCallback, useMemo, useState } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { confirmDelete } from '@/Utils/confirmDelete';
 
 const TEAL = '#20A4AC';
 
@@ -35,6 +36,9 @@ export default function JobLineFinancials({
     const [modalOpen, setModalOpen] = useState(false);
     const [editingId, setEditingId] = useState(null);
     const [saving, setSaving] = useState(false);
+    const [chargeTypeSearch, setChargeTypeSearch] = useState('');
+    const [isChargeTypeDropdownOpen, setIsChargeTypeDropdownOpen] = useState(false);
+    const chargeTypeDropdownRef = useRef(null);
 
     const form = useForm(emptyForm(jobableType, jobableId));
 
@@ -78,6 +82,11 @@ export default function JobLineFinancials({
         const p = normalizePayload(form.data);
         return p.charge_type_id != null && p.charge != null && !Number.isNaN(p.charge);
     }, [form.data]);
+    const filteredChargeTypes = useMemo(() => {
+        const query = chargeTypeSearch.trim().toLowerCase();
+        if (!query) return chargeTypes;
+        return chargeTypes.filter((item) => String(item.name || '').toLowerCase().includes(query));
+    }, [chargeTypes, chargeTypeSearch]);
 
     const inertiaVisitOptions = onAfterMutation
         ? { preserveScroll: true, preserveState: true }
@@ -149,10 +158,14 @@ export default function JobLineFinancials({
     };
 
     const onDelete = (row) => {
-        if (!confirm(`Delete this ${title.toLowerCase()} line?`)) return;
-        router.delete(route(destroyRouteName, row.id), {
-            ...inertiaVisitOptions,
-            onSuccess: () => onAfterMutation?.(),
+        confirmDelete({
+            message: `Delete this ${title.toLowerCase()} line?`,
+            onConfirm: () => {
+                router.delete(route(destroyRouteName, row.id), {
+                    ...inertiaVisitOptions,
+                    onSuccess: () => onAfterMutation?.(),
+                });
+            },
         });
     };
 
@@ -168,6 +181,29 @@ export default function JobLineFinancials({
         const v = Number(n);
         return Number.isFinite(v) ? v.toFixed(2) : String(n);
     };
+
+    useEffect(() => {
+        const selected = chargeTypes.find((item) => String(item.id) === String(form.data.charge_type_id));
+        if (selected) {
+            setChargeTypeSearch(selected.name || '');
+        } else if (!form.data.charge_type_id) {
+            setChargeTypeSearch('');
+        }
+    }, [chargeTypes, form.data.charge_type_id, modalOpen]);
+
+    useEffect(() => {
+        if (!modalOpen) {
+            setIsChargeTypeDropdownOpen(false);
+            return;
+        }
+        const handleClickOutside = (event) => {
+            if (chargeTypeDropdownRef.current && !chargeTypeDropdownRef.current.contains(event.target)) {
+                setIsChargeTypeDropdownOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [modalOpen]);
 
     return (
         <div className="relative min-h-[12rem]">
@@ -197,6 +233,7 @@ export default function JobLineFinancials({
                             ) : (
                                 <>
                                     <th className="px-3 py-2 font-semibold text-gray-700">Revenue Type</th>
+                                    <th className="px-3 py-2 font-semibold text-gray-700">Customer Code</th>
                                     <th className="px-3 py-2 font-semibold text-gray-700">Charge Type</th>
                                     <th className="px-3 py-2 font-semibold text-gray-700">Created By</th>
                                     <th className="px-3 py-2 font-semibold text-gray-700">Charge</th>
@@ -225,6 +262,7 @@ export default function JobLineFinancials({
                                 ) : (
                                     <>
                                         <td className="px-3 py-2 text-gray-800">{row.type || '—'}</td>
+                                        <td className="px-3 py-2 text-gray-800">{row.customer?.customer_code || '—'}</td>
                                         <td className="px-3 py-2 text-gray-800">{row.charge_type?.name || '—'}</td>
                                         <td className="px-3 py-2 text-gray-800">{row.charged_by_user?.name || '—'}</td>
                                         <td className="px-3 py-2 text-gray-800">{formatMoney(row.charge)}</td>
@@ -291,18 +329,57 @@ export default function JobLineFinancials({
                                             <label className="block text-sm font-medium text-gray-700">
                                                 Charge Type <span className="text-red-600">*</span>
                                             </label>
-                                            <select
-                                                className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-[#17a2b8] focus:outline-none focus:ring-1 focus:ring-[#17a2b8]"
-                                                value={form.data.charge_type_id}
-                                                onChange={(e) => form.setData('charge_type_id', e.target.value)}
-                                            >
-                                                <option value="">Select…</option>
-                                                {chargeTypes.map((c) => (
-                                                    <option key={c.id} value={String(c.id)}>
-                                                        {c.name}
-                                                    </option>
-                                                ))}
-                                            </select>
+                                            <div className="relative mt-1" ref={chargeTypeDropdownRef}>
+                                                <input
+                                                    type="text"
+                                                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-[#17a2b8] focus:outline-none focus:ring-1 focus:ring-[#17a2b8]"
+                                                    placeholder="Search charge type..."
+                                                    value={chargeTypeSearch}
+                                                    onFocus={() => setIsChargeTypeDropdownOpen(true)}
+                                                    onChange={(e) => {
+                                                        setChargeTypeSearch(e.target.value);
+                                                        form.setData('charge_type_id', '');
+                                                        setIsChargeTypeDropdownOpen(true);
+                                                    }}
+                                                    required
+                                                />
+                                                {isChargeTypeDropdownOpen && (
+                                                    <div className="absolute z-20 mt-1 max-h-44 w-full overflow-auto rounded border border-gray-300 bg-white shadow-lg">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                form.setData('charge_type_id', '');
+                                                                setChargeTypeSearch('');
+                                                                setIsChargeTypeDropdownOpen(false);
+                                                            }}
+                                                            className="w-full border-b border-gray-100 px-3 py-2 text-left text-sm text-gray-600 hover:bg-gray-50"
+                                                        >
+                                                            Select charge type
+                                                        </button>
+                                                        {filteredChargeTypes.map((item) => (
+                                                            <button
+                                                                key={item.id}
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    form.setData('charge_type_id', String(item.id));
+                                                                    setChargeTypeSearch(item.name || '');
+                                                                    setIsChargeTypeDropdownOpen(false);
+                                                                }}
+                                                                className={`w-full px-3 py-2 text-left text-sm hover:bg-[#1a8d95] hover:text-white ${
+                                                                    String(form.data.charge_type_id) === String(item.id)
+                                                                        ? 'bg-[#20A4AC] text-white'
+                                                                        : 'text-gray-700'
+                                                                }`}
+                                                            >
+                                                                {item.name}
+                                                            </button>
+                                                        ))}
+                                                        {!filteredChargeTypes.length && (
+                                                            <div className="px-3 py-2 text-sm text-gray-500">No charge type found</div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
                                             {form.errors.charge_type_id && (
                                                 <p className="mt-1 text-sm text-red-600">{form.errors.charge_type_id}</p>
                                             )}

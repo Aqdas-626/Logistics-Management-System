@@ -39,4 +39,9 @@ class JobQueue extends Model
     {
         return $this->hasMany(JobQueueDocument::class)->latest();
     }
+
+    public function statusHistories(): HasMany
+    {
+        return $this->hasMany(JobStatusHistory::class)->latest('changed_at')->latest('id');
+    }
 }

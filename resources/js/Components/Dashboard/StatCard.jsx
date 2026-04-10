@@ -32,13 +32,14 @@ export default function StatCard({ icon: Icon, label, value, change, isPositive 
                     </div>
                 </div>
 
-                {/* Bottom section - Change indicator */}
-                <div className="mt-4 flex items-center gap-1">
-                    <span className={`text-sm font-semibold ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
-                        {isPositive ? '↑' : '↓'} {change}
-                    </span>
-                    <span className="text-xs text-gray-500">from last month</span>
-                </div>
+                {change != null && change !== '' && (
+                    <div className="mt-4 flex items-center gap-1">
+                        <span className={`text-sm font-semibold ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                            {isPositive ? '↑' : '↓'} {change}
+                        </span>
+                        <span className="text-xs text-gray-500">from last month</span>
+                    </div>
+                )}
             </div>
         </div>
     );

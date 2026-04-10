@@ -12,6 +12,11 @@ export default function Create({ companies, branches, vehicleTypes }) {
         branch_id: '',
         vehicle_type_id: '',
         registration_no: '',
+        chassis_no: '',
+        engine_no: '',
+        color: '',
+        fuel_type: '',
+        fuel_capacity: '',
         vin: '',
         status: 'active',
         odometer_km: '',
@@ -113,6 +118,69 @@ export default function Create({ companies, branches, vehicleTypes }) {
                                     onChange={(e) => setData('vin', e.target.value)}
                                 />
                                 <InputError message={errors.vin} className="mt-2" />
+                            </div>
+
+                            <div>
+                                <InputLabel htmlFor="chassis_no" value="Chassis No" />
+                                <TextInput
+                                    id="chassis_no"
+                                    className="mt-1 block w-full"
+                                    value={data.chassis_no}
+                                    onChange={(e) => setData('chassis_no', e.target.value)}
+                                />
+                                <InputError message={errors.chassis_no} className="mt-2" />
+                            </div>
+
+                            <div>
+                                <InputLabel htmlFor="engine_no" value="Engine No" />
+                                <TextInput
+                                    id="engine_no"
+                                    className="mt-1 block w-full"
+                                    value={data.engine_no}
+                                    onChange={(e) => setData('engine_no', e.target.value)}
+                                />
+                                <InputError message={errors.engine_no} className="mt-2" />
+                            </div>
+
+                            <div>
+                                <InputLabel htmlFor="color" value="Color" />
+                                <TextInput
+                                    id="color"
+                                    className="mt-1 block w-full"
+                                    value={data.color}
+                                    onChange={(e) => setData('color', e.target.value)}
+                                />
+                                <InputError message={errors.color} className="mt-2" />
+                            </div>
+
+                            <div>
+                                <InputLabel htmlFor="fuel_type" value="Fuel Type" />
+                                <select
+                                    id="fuel_type"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                                    value={data.fuel_type}
+                                    onChange={(e) => setData('fuel_type', e.target.value)}
+                                >
+                                    <option value="">Select fuel type</option>
+                                    <option value="petrol">Petrol</option>
+                                    <option value="diesel">Diesel</option>
+                                    <option value="electric">Electric</option>
+                                    <option value="hybrid">Hybrid</option>
+                                </select>
+                                <InputError message={errors.fuel_type} className="mt-2" />
+                            </div>
+
+                            <div>
+                                <InputLabel htmlFor="fuel_capacity" value="Fuel Capacity" />
+                                <TextInput
+                                    id="fuel_capacity"
+                                    type="number"
+                                    step="0.01"
+                                    className="mt-1 block w-full"
+                                    value={data.fuel_capacity}
+                                    onChange={(e) => setData('fuel_capacity', e.target.value)}
+                                />
+                                <InputError message={errors.fuel_capacity} className="mt-2" />
                             </div>
 
                             <div>

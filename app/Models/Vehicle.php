@@ -18,6 +18,11 @@ class Vehicle extends Model
         'vehicle_type_id',
         'registration_no',
         'vin',
+        'chassis_no',
+        'engine_no',
+        'color',
+        'fuel_type',
+        'fuel_capacity',
         'status',
         'odometer_km',
     ];
@@ -26,6 +31,7 @@ class Vehicle extends Model
     {
         return [
             'odometer_km' => 'decimal:2',
+            'fuel_capacity' => 'decimal:2',
         ];
     }
 
