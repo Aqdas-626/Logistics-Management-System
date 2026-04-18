@@ -111,7 +111,12 @@ export default function Show({ record }) {
                             <div>
                                 <dt className="text-gray-500">Total</dt>
                                 <dd className="font-medium text-gray-900">
-                                    {record.currency || 'PKR'} {record.total_cost != null ? Number(record.total_cost).toFixed(2) : '0.00'}
+                                    {new Intl.NumberFormat('en-NZ', {
+                                        style: 'currency',
+                                        currency: (record.currency || 'NZD').toUpperCase(),
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                    }).format(Number(record.total_cost || 0))}
                                     {inv ? (
                                         <a
                                             href={`/storage/${inv}`}

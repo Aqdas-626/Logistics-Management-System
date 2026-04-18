@@ -23,7 +23,7 @@ return new class extends Migration
             $table->date('end_date')->nullable();
             $table->text('service_details')->nullable();
             $table->decimal('total_cost', 14, 2)->default(0);
-            $table->string('currency', 10)->default('PKR');
+            $table->string('currency', 10)->default('NZD');
             $table->string('invoice_receipt_path', 255)->nullable();
             $table->enum('priority', ['normal', 'high', 'critical'])->default('normal');
             $table->string('notification_method', 80)->nullable();

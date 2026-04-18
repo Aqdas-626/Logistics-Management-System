@@ -16,6 +16,22 @@ const formatDate = (value) => {
     });
 };
 
+function formatInvoiceMoney(currencyCode, amount) {
+    const code = (currencyCode || 'NZD').toUpperCase();
+    const n = Number(amount);
+    const safe = Number.isFinite(n) ? n : 0;
+    try {
+        return new Intl.NumberFormat('en-NZ', {
+            style: 'currency',
+            currency: code,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(safe);
+    } catch {
+        return `${code} ${safe.toFixed(2)}`;
+    }
+}
+
 export default function Show({ invoice }) {
     const { data, setData, post, processing, errors } = useForm({
         payment_date: '',
@@ -56,8 +72,8 @@ export default function Show({ invoice }) {
                     <div><p className="text-xs text-gray-500">Issue Date</p><p className="font-medium">{formatDate(invoice.issue_date)}</p></div>
                     <div><p className="text-xs text-gray-500">Due Date</p><p className="font-medium">{formatDate(invoice.due_date)}</p></div>
                     <div><p className="text-xs text-gray-500">Status</p><p className="font-medium">{invoice.status}</p></div>
-                    <div><p className="text-xs text-gray-500">Grand Total</p><p className="font-medium">{Number(invoice.grand_total || 0).toFixed(2)}</p></div>
-                    <div><p className="text-xs text-gray-500">Balance Due</p><p className="font-medium">{Number(invoice.balance_due || 0).toFixed(2)}</p></div>
+                    <div><p className="text-xs text-gray-500">Grand Total</p><p className="font-medium">{formatInvoiceMoney(invoice.currency_code, invoice.grand_total)}</p></div>
+                    <div><p className="text-xs text-gray-500">Balance Due</p><p className="font-medium">{formatInvoiceMoney(invoice.currency_code, invoice.balance_due)}</p></div>
                 </div>
 
                 <div className="rounded-lg border border-gray-200 bg-white p-4">
@@ -79,10 +95,10 @@ export default function Show({ invoice }) {
                                     <tr key={line.id} className="border-t border-gray-200">
                                         <td className="px-3 py-2">{line.description}</td>
                                         <td className="px-3 py-2">{Number(line.qty || 0).toFixed(3)}</td>
-                                        <td className="px-3 py-2">{Number(line.unit_price || 0).toFixed(2)}</td>
-                                        <td className="px-3 py-2">{Number(line.line_discount || 0).toFixed(2)}</td>
-                                        <td className="px-3 py-2">{Number(line.tax_amount || 0).toFixed(2)}</td>
-                                        <td className="px-3 py-2">{Number(line.line_total || 0).toFixed(2)}</td>
+                                        <td className="px-3 py-2">{formatInvoiceMoney(invoice.currency_code, line.unit_price)}</td>
+                                        <td className="px-3 py-2">{formatInvoiceMoney(invoice.currency_code, line.line_discount)}</td>
+                                        <td className="px-3 py-2">{formatInvoiceMoney(invoice.currency_code, line.tax_amount)}</td>
+                                        <td className="px-3 py-2">{formatInvoiceMoney(invoice.currency_code, line.line_total)}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -114,7 +130,7 @@ export default function Show({ invoice }) {
                             {(invoice.payments || []).length ? invoice.payments.map((payment) => (
                                 <div key={payment.id} className="flex items-center justify-between rounded border border-gray-200 p-2 text-sm">
                                     <div>
-                                        <div>{formatDate(payment.payment_date)} - {Number(payment.amount || 0).toFixed(2)}</div>
+                                        <div>{formatDate(payment.payment_date)} — {formatInvoiceMoney(invoice.currency_code, payment.amount)}</div>
                                         <div className="text-xs text-gray-500">{payment.method || '-'} {payment.reference_no ? `| ${payment.reference_no}` : ''}</div>
                                     </div>
                                     <button type="button" onClick={() => deletePayment(payment.id)} className="rounded bg-red-50 px-2 py-1 text-xs text-red-700">

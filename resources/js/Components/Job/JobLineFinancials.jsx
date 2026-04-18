@@ -179,7 +179,13 @@ export default function JobLineFinancials({
     const formatMoney = (n) => {
         if (n == null || n === '') return '—';
         const v = Number(n);
-        return Number.isFinite(v) ? v.toFixed(2) : String(n);
+        if (!Number.isFinite(v)) return String(n);
+        return new Intl.NumberFormat('en-NZ', {
+            style: 'currency',
+            currency: 'NZD',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(v);
     };
 
     useEffect(() => {

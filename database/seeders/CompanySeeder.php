@@ -28,7 +28,7 @@ class CompanySeeder extends Seeder
                 'postcode' => '10001',
                 'country_code' => 'US',
                 'timezone' => 'UTC',
-                'base_currency' => 'USD',
+                'base_currency' => 'NZD',
                 'status' => 'active',
             ]
         );

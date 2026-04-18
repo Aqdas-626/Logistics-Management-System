@@ -22,10 +22,10 @@ class InvoiceController extends Controller
         if ($request->filled('search')) {
             $search = trim((string) $request->string('search'));
             $query->where(function ($q) use ($search) {
-                $q->where('invoice_no', 'like', '%' . $search . '%')
+                $q->where('invoice_no', 'like', '%'.$search.'%')
                     ->orWhereHas('customer', function ($cq) use ($search) {
-                        $cq->where('name', 'like', '%' . $search . '%')
-                            ->orWhere('customer_code', 'like', '%' . $search . '%');
+                        $cq->where('name', 'like', '%'.$search.'%')
+                            ->orWhere('customer_code', 'like', '%'.$search.'%');
                     });
             });
         }
@@ -66,7 +66,7 @@ class InvoiceController extends Controller
                 'invoice_no' => $invoiceNo,
                 'issue_date' => $validated['issue_date'],
                 'due_date' => $validated['due_date'] ?? null,
-                'currency_code' => strtoupper((string) ($validated['currency_code'] ?? 'USD')),
+                'currency_code' => strtoupper((string) ($validated['currency_code'] ?? 'NZD')),
                 'status' => $validated['status'] ?? 'draft',
                 'subtotal' => $totals['subtotal'],
                 'discount_total' => $totals['discount_total'],
@@ -173,6 +173,7 @@ class InvoiceController extends Controller
     public function destroy(Invoice $invoice)
     {
         $invoice->delete();
+
         return redirect()->route('invoices.index')->with('success', 'Invoice deleted successfully.');
     }
 
@@ -250,7 +251,7 @@ class InvoiceController extends Controller
             ->lockForUpdate()
             ->first();
 
-        if (!$seq) {
+        if (! $seq) {
             $seq = InvoiceSequence::create([
                 'company_id' => $companyId,
                 'year' => $year,

@@ -37,6 +37,22 @@ function formatDateRange(start, end) {
     return a || b || '—';
 }
 
+function formatMaintMoney(currency, amount) {
+    const code = (currency || 'NZD').toUpperCase();
+    const n = Number(amount);
+    const safe = Number.isFinite(n) ? n : 0;
+    try {
+        return new Intl.NumberFormat('en-NZ', {
+            style: 'currency',
+            currency: code,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(safe);
+    } catch {
+        return `${code} ${safe.toFixed(2)}`;
+    }
+}
+
 function priorityBadge(priority) {
     let bg = '#e5e7eb';
     let color = '#374151';
@@ -319,8 +335,7 @@ export default function Index({ records, filters, counts }) {
                                                 {row.service_details || '—'}
                                             </td>
                                             <td className="whitespace-nowrap px-3 py-2 font-medium text-gray-900">
-                                                {row.currency || 'PKR'}{' '}
-                                                {row.total_cost != null ? Number(row.total_cost).toLocaleString() : '0'}
+                                                {formatMaintMoney(row.currency, row.total_cost)}
                                                 {row.invoice_receipt_path ? (
                                                     <PaperclipIcon className="ml-1 inline h-4 w-4 text-gray-500" />
                                                 ) : null}
@@ -413,9 +428,7 @@ export default function Index({ records, filters, counts }) {
                                 <p className="mb-2 text-xs text-gray-500">{formatDateRange(row.start_date, row.end_date)}</p>
                                 <p className="mb-3 line-clamp-2 text-sm text-gray-700">{row.service_details || '—'}</p>
                                 <div className="flex items-center justify-between text-sm">
-                                    <span className="font-medium">
-                                        {row.currency} {row.total_cost != null ? Number(row.total_cost).toFixed(2) : '0'}
-                                    </span>
+                                    <span className="font-medium">{formatMaintMoney(row.currency, row.total_cost)}</span>
                                     <select
                                         className="rounded border-gray-300 text-xs"
                                         value={row.status}

@@ -36,7 +36,12 @@ function formatMoney(value) {
     if (value === null || value === undefined || value === '') return '—';
     const n = Number(value);
     if (Number.isNaN(n)) return '—';
-    return n.toLocaleString('en-GB', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return new Intl.NumberFormat('en-NZ', {
+        style: 'currency',
+        currency: 'NZD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    }).format(n);
 }
 
 export default function Index({ parts, filters }) {

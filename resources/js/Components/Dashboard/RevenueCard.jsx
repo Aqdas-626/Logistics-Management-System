@@ -4,9 +4,9 @@ import { ArrowRightIcon } from '@/Components/Icons';
 function formatCurrency(value) {
     const n = Number(value);
     if (!Number.isFinite(n)) {
-        return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(0);
+        return new Intl.NumberFormat('en-NZ', { style: 'currency', currency: 'NZD' }).format(0);
     }
-    return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(n);
+    return new Intl.NumberFormat('en-NZ', { style: 'currency', currency: 'NZD' }).format(n);
 }
 
 export default function RevenueCard({

@@ -21,17 +21,21 @@ export default function Index({ users, filters }) {
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                        User Roles
-                    </h2>
-                    <Link
-                        href={route('user-roles.create')}
-                        className="inline-flex items-center rounded-md border border-transparent px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#20A4AC] focus:ring-offset-2 active:opacity-80"
-                        style={{ backgroundColor: '#20A4AC' }}
-                    >
-                        Add User
-                    </Link>
+                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-xl font-semibold leading-tight text-gray-800">
+                            User Roles
+                        </h2>
+                    </div>
+                    <div className="mb-4 flex justify-end">
+                        <Link
+                            href={route('user-roles.create')}
+                            className="inline-flex items-center rounded-md border border-transparent px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#20A4AC] focus:ring-offset-2 active:opacity-80"
+                            style={{ backgroundColor: '#20A4AC' }}
+                        >
+                            Create User
+                        </Link>
+                    </div>
                 </div>
             }
         >
@@ -50,15 +54,7 @@ export default function Index({ users, filters }) {
                         </div>
                     )}
 
-                    <div className="mb-4 flex justify-end">
-                        <Link
-                            href={route('user-roles.create')}
-                            className="inline-flex items-center rounded-md border border-transparent px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#20A4AC] focus:ring-offset-2 active:opacity-80"
-                            style={{ backgroundColor: '#20A4AC' }}
-                        >
-                            Create User
-                        </Link>
-                    </div>
+                    
 
                     <form
                         onSubmit={searchSubmit}

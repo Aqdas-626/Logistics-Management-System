@@ -16,7 +16,7 @@ function defaultForm() {
         end_date: '',
         service_details: '',
         total_cost: '0',
-        currency: 'PKR',
+        currency: 'NZD',
         invoice_receipt: null,
         priority: 'normal',
         notification_method: 'email',

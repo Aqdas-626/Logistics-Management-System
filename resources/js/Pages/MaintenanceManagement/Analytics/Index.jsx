@@ -21,7 +21,12 @@ const CHART_HEADER_VEHICLES = '#d97706';
 function formatMoney(value) {
     const n = Number(value);
     if (Number.isNaN(n)) return '0';
-    return n.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    return new Intl.NumberFormat('en-NZ', {
+        style: 'currency',
+        currency: 'NZD',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+    }).format(n);
 }
 
 function ChartTooltip({ active, payload, label }) {

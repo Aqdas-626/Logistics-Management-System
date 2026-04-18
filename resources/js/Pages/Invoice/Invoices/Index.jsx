@@ -17,6 +17,22 @@ const formatDate = (value) => {
     });
 };
 
+function formatInvoiceMoney(currencyCode, amount) {
+    const code = (currencyCode || 'NZD').toUpperCase();
+    const n = Number(amount);
+    const safe = Number.isFinite(n) ? n : 0;
+    try {
+        return new Intl.NumberFormat('en-NZ', {
+            style: 'currency',
+            currency: code,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(safe);
+    } catch {
+        return `${code} ${safe.toFixed(2)}`;
+    }
+}
+
 export default function Index({ invoices, filters }) {
     const [search, setSearch] = useState(filters?.search || '');
     const [status, setStatus] = useState(filters?.status || '');
@@ -86,8 +102,8 @@ export default function Index({ invoices, filters }) {
                                     <td className="px-3 py-2">{formatDate(invoice.issue_date)}</td>
                                     <td className="px-3 py-2">{formatDate(invoice.due_date)}</td>
                                     <td className="px-3 py-2">{invoice.status}</td>
-                                    <td className="px-3 py-2">{Number(invoice.grand_total || 0).toFixed(2)}</td>
-                                    <td className="px-3 py-2">{Number(invoice.balance_due || 0).toFixed(2)}</td>
+                                    <td className="px-3 py-2">{formatInvoiceMoney(invoice.currency_code, invoice.grand_total)}</td>
+                                    <td className="px-3 py-2">{formatInvoiceMoney(invoice.currency_code, invoice.balance_due)}</td>
                                     <td className="px-3 py-2 text-right">
                                         <div className="inline-flex gap-2">
                                             <Link href={route('invoices.show', invoice.id)} className="text-[#178089]">View</Link>

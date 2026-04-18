@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('invoice_no', 50)->unique();
             $table->date('issue_date');
             $table->date('due_date')->nullable();
-            $table->char('currency_code', 3)->default('USD');
+            $table->char('currency_code', 3)->default('NZD');
             $table->enum('status', [
                 'draft',
                 'issued',

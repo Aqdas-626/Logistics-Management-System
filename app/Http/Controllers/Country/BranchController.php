@@ -75,7 +75,7 @@ class BranchController extends Controller
                 'postcode' => '',
                 'country_code' => '',
                 'timezone' => 'UTC',
-                'base_currency' => 'USD',
+                'base_currency' => 'NZD',
                 'status' => 'active',
                 'manager_user_id' => '',
             ],

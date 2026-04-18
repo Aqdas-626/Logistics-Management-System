@@ -280,7 +280,7 @@ class MaintenanceManagementController extends Controller
         $validated = $request->validate($rules);
 
         if (empty($validated['currency'])) {
-            $validated['currency'] = 'PKR';
+            $validated['currency'] = 'NZD';
         }
 
         if (! array_key_exists('total_cost', $validated) || $validated['total_cost'] === null) {

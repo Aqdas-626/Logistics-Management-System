@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('postcode', 30)->nullable();
             $table->char('country_code', 2)->nullable();
             $table->string('timezone', 80)->default('UTC');
-            $table->char('base_currency', 3)->default('USD');
+            $table->char('base_currency', 3)->default('NZD');
             $table->json('settings_json')->nullable();
             $table->string('status', 30)->default('active');
             $table->timestamps();

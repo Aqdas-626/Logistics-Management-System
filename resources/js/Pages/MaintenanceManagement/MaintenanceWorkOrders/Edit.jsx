@@ -32,7 +32,7 @@ function mapRecordToForm(record) {
         end_date: end,
         service_details: record.service_details || '',
         total_cost: record.total_cost != null ? String(record.total_cost) : '0',
-        currency: record.currency || 'PKR',
+        currency: record.currency || 'NZD',
         invoice_receipt: null,
         priority: record.priority || 'normal',
         notification_method: record.notification_method || 'email',

@@ -28,7 +28,7 @@ class BranchSeeder extends Seeder
                 'country_code' => 'US',
                 'phone' => '+1-555-0100',
                 'timezone' => 'UTC',
-                'base_currency' => 'USD',
+                'base_currency' => 'NZD',
                 'status' => 'active',
                 'manager_user_id' => $admin?->id,
             ]

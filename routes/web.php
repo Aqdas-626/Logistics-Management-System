@@ -14,6 +14,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Driver\DriverController;
 use App\Http\Controllers\Driver\DriverDocumentController;
 use App\Http\Controllers\Driver\DriverVehicleAssignmentController;
+use App\Http\Controllers\Expense\ExpenseCategoryController;
+use App\Http\Controllers\Expense\ExpenseController;
 use App\Http\Controllers\Export\ExportController;
 use App\Http\Controllers\Fuel\FuelController;
 use App\Http\Controllers\Fuel\FuelTankController;
@@ -158,6 +160,8 @@ Route::middleware('auth')->group(function () {
     Route::get('vehicle-vendors-export/excel', [VehicleVendorController::class, 'exportExcel'])->name('vehicle-vendors.export.excel');
     Route::get('vehicle-vendors-export/pdf', [VehicleVendorController::class, 'exportPdf'])->name('vehicle-vendors.export.pdf');
     Route::resource('traccar-devices', TraccarDeviceController::class)->except(['show']);
+    Route::resource('expense-categories', ExpenseCategoryController::class)->only(['index', 'store', 'update', 'destroy']);
+    Route::resource('expenses', ExpenseController::class);
     Route::resource('revenue-types', RevenueTypeController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('charge-types', ChargeTypeController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('invoices', InvoiceController::class);

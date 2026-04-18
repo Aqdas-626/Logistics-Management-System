@@ -42,7 +42,7 @@ export default function Create({ companies, branches, vehicleTypes, traccarDevic
             billing_method: 'per_km',
             default_cost: '',
             ownership_type: 'company_owned',
-            currency: 'PKR',
+            currency: 'NZD',
             effective_from: '',
             effective_to: '',
             notes: '',
@@ -605,7 +605,7 @@ export default function Create({ companies, branches, vehicleTypes, traccarDevic
                                         <TextInput
                                             id="financial_currency"
                                             className="mt-1 block w-full"
-                                            placeholder="PKR"
+                                            placeholder="NZD"
                                             value={data.financial.currency}
                                             onChange={(e) => updateFinancialField('currency', e.target.value)}
                                         />

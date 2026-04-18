@@ -10,6 +10,22 @@ const emptyLine = {
     tax_rate: 0,
 };
 
+function formatInvoiceMoney(currencyCode, amount) {
+    const code = (currencyCode || 'NZD').toUpperCase();
+    const n = Number(amount);
+    const safe = Number.isFinite(n) ? n : 0;
+    try {
+        return new Intl.NumberFormat('en-NZ', {
+            style: 'currency',
+            currency: code,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        }).format(safe);
+    } catch {
+        return `${code} ${safe.toFixed(2)}`;
+    }
+}
+
 export default function Form({
     mode = 'create',
     invoice = null,
@@ -23,7 +39,7 @@ export default function Form({
         customer_id: invoice?.customer_id ? String(invoice.customer_id) : '',
         issue_date: invoice?.issue_date ? String(invoice.issue_date).slice(0, 10) : defaultIssueDate,
         due_date: invoice?.due_date ? String(invoice.due_date).slice(0, 10) : defaultDueDate,
-        currency_code: invoice?.currency_code || 'USD',
+        currency_code: invoice?.currency_code || 'NZD',
         status: invoice?.status || 'draft',
         notes: invoice?.notes || '',
         terms: invoice?.terms || '',
@@ -258,12 +274,21 @@ export default function Form({
                         />
                     </div>
                     <div className="md:col-span-2 rounded bg-gray-50 p-3 text-sm">
-                        <div className="flex justify-between py-0.5"><span>Subtotal</span><span>{totals.subtotal.toFixed(2)}</span></div>
-                        <div className="flex justify-between py-0.5"><span>Discount</span><span>{totals.discount.toFixed(2)}</span></div>
-                        <div className="flex justify-between py-0.5"><span>Tax</span><span>{totals.tax.toFixed(2)}</span></div>
+                        <div className="flex justify-between py-0.5">
+                            <span>Subtotal</span>
+                            <span>{formatInvoiceMoney(data.currency_code, totals.subtotal)}</span>
+                        </div>
+                        <div className="flex justify-between py-0.5">
+                            <span>Discount</span>
+                            <span>{formatInvoiceMoney(data.currency_code, totals.discount)}</span>
+                        </div>
+                        <div className="flex justify-between py-0.5">
+                            <span>Tax</span>
+                            <span>{formatInvoiceMoney(data.currency_code, totals.tax)}</span>
+                        </div>
                         <div className="mt-1 flex justify-between border-t border-gray-300 pt-1 font-semibold">
                             <span>Grand Total</span>
-                            <span>{totals.grand.toFixed(2)}</span>
+                            <span>{formatInvoiceMoney(data.currency_code, totals.grand)}</span>
                         </div>
                     </div>
                 </div>

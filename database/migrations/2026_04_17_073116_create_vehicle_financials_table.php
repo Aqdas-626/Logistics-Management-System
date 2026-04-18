@@ -21,7 +21,7 @@ return new class extends Migration
             $table->decimal('default_cost', 12, 2)->default(0);
             $table->enum('ownership_type', ['company_owned', 'leased', 'rented', 'vendor_owned'])->default('company_owned');
             // Optional but useful
-            $table->string('currency', 10)->default('PKR');
+            $table->string('currency', 10)->default('NZD');
             $table->date('effective_from')->nullable();
             $table->date('effective_to')->nullable();
             $table->text('notes')->nullable();

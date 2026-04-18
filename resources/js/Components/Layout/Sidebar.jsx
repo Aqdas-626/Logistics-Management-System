@@ -24,12 +24,7 @@ export default function Sidebar() {
             href: route('dashboard'),
             children: null,
         },
-        {
-            icon: SparklesIcon,
-            label: 'Reports',
-            href: route('reports.index'),
-            children: null,
-        },
+        
         {
             icon: TruckIcon,
             label: 'Companies',
@@ -133,6 +128,15 @@ export default function Sidebar() {
             ],
         },
         {
+            icon: BriefcaseIcon,
+            label: 'Expense',
+            href: '#',
+            children: [
+                { label: 'Expense Category', href: route('expense-categories.index') },
+                { label: 'Expenses', href: route('expenses.index') },
+            ],
+        },
+        {
             icon: TruckIcon,
             label: 'Route Plans',
             href: route('route-plans.index'),
@@ -167,6 +171,12 @@ export default function Sidebar() {
                 { label: 'Job Information', href: route('job-additional-information.index') },
                 { label: 'Job Tracking', href: route('job-tracking-notifications.index') },
             ],
+        },
+        {
+            icon: SparklesIcon,
+            label: 'Reports',
+            href: route('reports.index'),
+            children: null,
         },
         {
             icon: TruckIcon,
@@ -261,6 +271,15 @@ export default function Sidebar() {
             url.startsWith('/maintenance-analytics')
         ) {
             const idx = menuItems.findIndex((item) => item.label === 'Maintenance');
+            if (idx >= 0) {
+                setExpandedMenu(idx);
+            }
+        } else if (
+            url.startsWith('/expense-categories') ||
+            url === '/expenses' ||
+            url.startsWith('/expenses/')
+        ) {
+            const idx = menuItems.findIndex((item) => item.label === 'Expense');
             if (idx >= 0) {
                 setExpandedMenu(idx);
             }

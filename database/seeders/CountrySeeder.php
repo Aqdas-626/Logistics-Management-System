@@ -18,6 +18,7 @@ class CountrySeeder extends Seeder
             ['name' => 'China', 'iso_alpha2' => 'CN', 'iso_alpha3' => 'CHN', 'phone_code' => '+86', 'currency_code' => 'CNY', 'is_active' => true],
             ['name' => 'India', 'iso_alpha2' => 'IN', 'iso_alpha3' => 'IND', 'phone_code' => '+91', 'currency_code' => 'INR', 'is_active' => true],
             ['name' => 'Australia', 'iso_alpha2' => 'AU', 'iso_alpha3' => 'AUS', 'phone_code' => '+61', 'currency_code' => 'AUD', 'is_active' => true],
+            ['name' => 'New Zealand', 'iso_alpha2' => 'NZ', 'iso_alpha3' => 'NZL', 'phone_code' => '+64', 'currency_code' => 'NZD', 'is_active' => true],
             ['name' => 'Canada', 'iso_alpha2' => 'CA', 'iso_alpha3' => 'CAN', 'phone_code' => '+1', 'currency_code' => 'CAD', 'is_active' => true],
             ['name' => 'Singapore', 'iso_alpha2' => 'SG', 'iso_alpha3' => 'SGP', 'phone_code' => '+65', 'currency_code' => 'SGD', 'is_active' => true],
             ['name' => 'Pakistan', 'iso_alpha2' => 'PK', 'iso_alpha3' => 'PAK', 'phone_code' => '+92', 'currency_code' => 'PKR', 'is_active' => true],
