@@ -48,4 +48,9 @@ class DriverVehicleAssignment extends Model
     {
         return $this->hasMany(JobQueue::class);
     }
+
+    public function routePlans(): HasMany
+    {
+        return $this->hasMany(RoutePlan::class);
+    }
 }

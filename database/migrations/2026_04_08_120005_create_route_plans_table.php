@@ -16,6 +16,17 @@ return new class extends Migration
             $table->string('route_code', 50)->unique();
             $table->string('route_name', 150);
             $table->date('plan_date');
+            $table->dateTime('scheduled_departure_at')->nullable();
+            $table->unsignedInteger('estimated_duration_minutes')->nullable();
+
+            $table->foreignId('origin_location_id')
+                ->nullable()
+                ->constrained('locations')
+                ->nullOnDelete();
+            $table->foreignId('destination_location_id')
+                ->nullable()
+                ->constrained('locations')
+                ->nullOnDelete();
 
             $table->foreignId('driver_vehicle_assignment_id')
                 ->nullable()

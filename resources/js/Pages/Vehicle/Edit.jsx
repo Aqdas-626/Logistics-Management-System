@@ -11,6 +11,7 @@ export default function Edit({ vehicle, companies, branches, vehicleTypes }) {
         company_id: vehicle.company_id || '',
         branch_id: vehicle.branch_id || '',
         vehicle_type_id: vehicle.vehicle_type_id || '',
+        name: vehicle.name || '',
         registration_no: vehicle.registration_no || '',
         chassis_no: vehicle.chassis_no || '',
         engine_no: vehicle.engine_no || '',
@@ -107,6 +108,17 @@ export default function Edit({ vehicle, companies, branches, vehicleTypes }) {
                                     onChange={(e) => setData('registration_no', e.target.value)}
                                 />
                                 <InputError message={errors.registration_no} className="mt-2" />
+                            </div>
+
+                            <div>
+                                <InputLabel htmlFor="name" value="Vehicle Name" />
+                                <TextInput
+                                    id="name"
+                                    className="mt-1 block w-full"
+                                    value={data.name}
+                                    onChange={(e) => setData('name', e.target.value)}
+                                />
+                                <InputError message={errors.name} className="mt-2" />
                             </div>
 
                             <div>

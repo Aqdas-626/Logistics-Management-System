@@ -59,18 +59,18 @@ export default function Header() {
                 {/* Right section - Icons & User */}
                 <div className="flex items-center gap-6">
                     {/* Notification Icon */}
-                    <button className="relative rounded-lg p-2 text-gray-600 transition-all hover:bg-gray-100">
+                    {/* <button className="relative rounded-lg p-2 text-gray-600 transition-all hover:bg-gray-100">
                         <BellIcon className="h-6 w-6" />
                         <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-red-500"></span>
-                    </button>
+                    </button> */}
 
                     {/* Message Icon */}
-                    <button className="relative rounded-lg p-2 text-gray-600 transition-all hover:bg-gray-100">
+                    {/* <button className="relative rounded-lg p-2 text-gray-600 transition-all hover:bg-gray-100">
                         <EnvelopeIcon className="h-6 w-6" />
                         <span className="absolute right-1 top-1 h-3 w-3 rounded-full bg-green-500 text-xs text-white flex items-center justify-center">
                             2
                         </span>
-                    </button>
+                    </button> */}
 
                     {/* Divider */}
                     <div className="h-8 w-px bg-gray-200"></div>

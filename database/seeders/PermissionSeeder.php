@@ -67,6 +67,8 @@ class PermissionSeeder extends Seeder
             'dispatch.assign_driver',
             'dispatch.assign_vehicle',
             'dispatch.route_optimize',
+            'route_plan.view',
+            'route_plan.manage',
             'delivery.view',
             'delivery.update_status',
             'delivery.pod.capture',
