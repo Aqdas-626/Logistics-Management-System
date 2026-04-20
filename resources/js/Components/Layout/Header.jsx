@@ -6,6 +6,7 @@ import {
     MagnifyingGlassIcon,
     Bars3Icon,
     ArrowRightIcon,
+    CogIcon,
 } from '@/Components/Icons';
 import { useSidebar } from '@/Context/SidebarContext';
 
@@ -93,6 +94,15 @@ export default function Header() {
 
                         {isMenuOpen && (
                             <div className="absolute right-0 z-50 mt-2 w-44 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg">
+                                <Link
+                                    href={route('profile.edit')}
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+                                >
+                                    <CogIcon className="h-4 w-4" />
+                                    Profile
+                                </Link>
+                                <div className="h-px bg-gray-100" />
                                 <Link
                                     href={route('logout')}
                                     method="post"

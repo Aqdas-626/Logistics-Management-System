@@ -61,7 +61,7 @@ export default function Index({ dgSignatories, filters }) {
                         style={{ backgroundColor: '#20A4AC' }}
                     >
                         <PlusIcon className="h-5 w-5" />
-                        New Signatory
+                        New
                     </button>
                 </div>
 

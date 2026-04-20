@@ -82,13 +82,13 @@ export default function Index({ vendors, filters }) {
         <AuthenticatedLayout
             header={
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                        <div className="flex flex-wrap items-center gap-3">
+                    <div className="w-full min-w-0">
+                        <div className="flex items-start justify-between gap-3">
                             <h2 className="text-2xl font-semibold text-gray-800 sm:text-3xl">Maintenance Vendor</h2>
                             <button
                                 type="button"
                                 onClick={openCreate}
-                                className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-95"
+                                className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-95"
                                 style={{ backgroundColor: TEAL }}
                             >
                                 <PlusIcon className="h-4 w-4" />

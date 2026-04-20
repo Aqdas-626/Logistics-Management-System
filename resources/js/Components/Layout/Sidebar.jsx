@@ -86,6 +86,7 @@ export default function Sidebar() {
             href: '#',
             children: [
                 { label: 'Job Queue', href: route('job-queues.index') },
+                { label: 'Dispatches', href: route('dispatches.index') },
                 { label: 'Vessel', href: route('vessels.index') },
                 { label: 'Location', href: route('locations.index') },
             ],
@@ -159,6 +160,7 @@ export default function Sidebar() {
                 { label: 'Endorsement', href: route('endorsements.index') },
                 { label: 'ISO Codes', href: route('iso-codes.index') },
                 { label: 'Notification Type', href: route('notification-types.index') },
+                { label: 'Shippings', href: route('shippings.index') },
             ],
         },
         {
@@ -178,12 +180,7 @@ export default function Sidebar() {
             href: route('reports.index'),
             children: null,
         },
-        {
-            icon: TruckIcon,
-            label: 'Shippings',
-            href: route('shippings.index'),
-            children: null,
-        },
+        
         {
             icon: UserGroupIcon,
             label: 'User Management',
@@ -290,6 +287,7 @@ export default function Sidebar() {
             }
         } else if (
             url.startsWith('/job-queues') ||
+            url.startsWith('/dispatches') ||
             url.startsWith('/vessels') ||
             url === '/locations' ||
             url.startsWith('/locations/')

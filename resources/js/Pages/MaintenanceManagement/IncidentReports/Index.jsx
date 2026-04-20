@@ -119,26 +119,28 @@ export default function Index({ incidents, filters, vehicles }) {
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="flex flex-wrap items-center gap-3">
-                        <h2 className="text-2xl font-semibold text-gray-800 sm:text-3xl">Incident Reports</h2>
-                        <button
-                            type="button"
-                            onClick={openCreate}
-                            className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-95"
-                            style={{ backgroundColor: TEAL }}
-                        >
-                            <PlusIcon className="h-4 w-4" />
-                            Report Issue
-                        </button>
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="w-full min-w-0">
+                        <div className="flex items-start justify-between gap-3">
+                            <h2 className="text-2xl font-semibold text-gray-800 sm:text-3xl">Incident Reports</h2>
+                            <button
+                                type="button"
+                                onClick={openCreate}
+                                className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-95"
+                                style={{ backgroundColor: TEAL }}
+                            >
+                                <PlusIcon className="h-4 w-4" />
+                                Report Issue
+                            </button>
+                        </div>
+                        <p className="mt-1 text-sm text-gray-500">
+                            <Link href={route('dashboard')} className="text-[#178089] hover:underline">
+                                Dashboard
+                            </Link>
+                            <span className="mx-1 text-gray-400">/</span>
+                            <span className="text-gray-600">Incidents</span>
+                        </p>
                     </div>
-                    <p className="text-sm text-gray-500 sm:text-right">
-                        <Link href={route('dashboard')} className="text-[#178089] hover:underline">
-                            Dashboard
-                        </Link>
-                        <span className="mx-1 text-gray-400">/</span>
-                        <span className="text-gray-600">Incidents</span>
-                    </p>
                 </div>
             }
         >

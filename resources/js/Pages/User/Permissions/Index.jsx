@@ -5,6 +5,14 @@ import InputLabel from '@/Components/InputLabel';
 import DangerButton from '@/Components/DangerButton';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { confirmDelete } from '@/Utils/confirmDelete';
+import {
+    ArrowRightIcon,
+    EyeIcon,
+    MagnifyingGlassIcon,
+    PencilIcon,
+    PlusIcon,
+    TrashIcon,
+} from '@/Components/Icons';
 
 export default function Index({ permissions, filters }) {
     const { flash } = usePage().props;
@@ -63,7 +71,7 @@ export default function Index({ permissions, filters }) {
 
                     <form
                         onSubmit={searchSubmit}
-                        className="mb-6 flex flex-wrap items-end gap-4"
+                        className="mb-6 flex flex-wrap items-end gap-4 justify-end"
                     >
                         <div>
                             <InputLabel htmlFor="search" value="Search" />
@@ -118,10 +126,10 @@ export default function Index({ permissions, filters }) {
                                             <td className="px-3 py-2 text-right">
                                                 <DangerButton
                                                     type="button"
-                                                    className="text-xs"
+                                                    className="bg-transparent hover:bg-transparent p-0"
                                                     onClick={() => destroy(p.id)}
                                                 >
-                                                    Delete
+                                                    <TrashIcon className="h-5 w-5 text-red-500" />
                                                 </DangerButton>
                                             </td>
                                         </tr>

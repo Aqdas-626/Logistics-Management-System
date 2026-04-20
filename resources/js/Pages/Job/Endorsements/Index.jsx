@@ -65,7 +65,7 @@ export default function Index({ endorsements, filters }) {
                         style={{ backgroundColor: '#20A4AC' }}
                     >
                         <PlusIcon className="h-5 w-5" />
-                        New Endorsement
+                        New
                     </button>
                 </div>
 

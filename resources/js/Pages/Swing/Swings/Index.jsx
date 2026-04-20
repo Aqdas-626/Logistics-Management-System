@@ -43,7 +43,7 @@ export default function Index({ swings, filters }) {
                         style={{ backgroundColor: '#20A4AC' }}
                     >
                         <PlusIcon className="h-5 w-5" />
-                        New Swing Job
+                        New
                     </Link>
                 </div>
 

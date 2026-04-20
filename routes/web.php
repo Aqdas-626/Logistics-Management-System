@@ -11,6 +11,7 @@ use App\Http\Controllers\Country\CompanyController;
 use App\Http\Controllers\Country\CountryController;
 use App\Http\Controllers\Customer\CustomerController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Dispatch\DispatchController;
 use App\Http\Controllers\Driver\DriverController;
 use App\Http\Controllers\Driver\DriverDocumentController;
 use App\Http\Controllers\Driver\DriverVehicleAssignmentController;
@@ -131,6 +132,10 @@ Route::middleware('auth')->group(function () {
     Route::resource('carts', CartController::class);
     Route::resource('swings', SwingController::class);
     Route::resource('drivers', DriverController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::resource('dispatches', DispatchController::class)->only(['index', 'show', 'destroy']);
+    Route::get('dispatches-export/csv', [DispatchController::class, 'exportCsv'])->name('dispatches.export.csv');
+    Route::get('dispatches-export/excel', [DispatchController::class, 'exportExcel'])->name('dispatches.export.excel');
+    Route::get('dispatches-export/pdf', [DispatchController::class, 'exportPdf'])->name('dispatches.export.pdf');
     Route::resource('driver-vehicle-assignments', DriverVehicleAssignmentController::class)->except(['show']);
     Route::resource('route-plans', RoutePlanController::class);
     Route::patch('route-plans/{route_plan}/status', [RoutePlanController::class, 'updateStatus'])->name('route-plans.update-status');
@@ -162,6 +167,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('traccar-devices', TraccarDeviceController::class)->except(['show']);
     Route::resource('expense-categories', ExpenseCategoryController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('expenses', ExpenseController::class);
+    Route::get('expenses-export/csv', [ExpenseController::class, 'exportCsv'])->name('expenses.export.csv');
+    Route::get('expenses-export/excel', [ExpenseController::class, 'exportExcel'])->name('expenses.export.excel');
+    Route::get('expenses-export/pdf', [ExpenseController::class, 'exportPdf'])->name('expenses.export.pdf');
     Route::resource('revenue-types', RevenueTypeController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('charge-types', ChargeTypeController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::resource('invoices', InvoiceController::class);

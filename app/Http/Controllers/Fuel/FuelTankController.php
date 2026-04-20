@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Fuel;
 
+use App\Http\Requests\Fuel\StoreFuelTankRequest;
+use App\Http\Requests\Fuel\UpdateFuelTankRequest;
 use App\Http\Controllers\Controller;
 use App\Models\FuelTank;
 use Illuminate\Http\RedirectResponse;
@@ -31,7 +33,7 @@ class FuelTankController extends Controller
         $search = $request->string('search')->trim()->value();
 
         return Inertia::render('Fuel/Tanks/Index', [
-            'tanks' => $this->filteredQuery($search)->paginate(15)->withQueryString(),
+            'tanks'   => $this->filteredQuery($search)->paginate(15)->withQueryString(),
             'filters' => ['search' => $search],
         ]);
     }
@@ -41,19 +43,9 @@ class FuelTankController extends Controller
         return Inertia::render('Fuel/Tanks/Create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreFuelTankRequest $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'fuel_type' => ['nullable', 'in:petrol,diesel,electric,hybrid'],
-            'capacity' => ['required', 'numeric', 'min:0'],
-            'current_stock' => ['required', 'numeric', 'min:0'],
-            'unit' => ['required', 'string', 'max:50'],
-            'note' => ['nullable', 'string'],
-            'is_active' => ['required', 'boolean'],
-        ]);
-
-        FuelTank::create($validated);
+        FuelTank::create($request->validated());
 
         return redirect()
             ->route('fuel-tanks.index')
@@ -67,19 +59,9 @@ class FuelTankController extends Controller
         ]);
     }
 
-    public function update(Request $request, FuelTank $fuelTank): RedirectResponse
+    public function update(UpdateFuelTankRequest $request, FuelTank $fuelTank): RedirectResponse
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'fuel_type' => ['nullable', 'in:petrol,diesel,electric,hybrid'],
-            'capacity' => ['required', 'numeric', 'min:0'],
-            'current_stock' => ['required', 'numeric', 'min:0'],
-            'unit' => ['required', 'string', 'max:50'],
-            'note' => ['nullable', 'string'],
-            'is_active' => ['required', 'boolean'],
-        ]);
-
-        $fuelTank->update($validated);
+        $fuelTank->update($request->validated());
 
         return redirect()
             ->route('fuel-tanks.index')

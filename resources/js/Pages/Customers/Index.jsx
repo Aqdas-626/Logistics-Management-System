@@ -68,7 +68,7 @@ export default function Index({ customers, filters }) {
                         style={{ backgroundColor: '#20A4AC' }}
                     >
                         <PlusIcon className="h-5 w-5" />
-                        New Customer
+                        New
                     </button>
                 </div>
 

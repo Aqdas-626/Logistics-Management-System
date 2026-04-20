@@ -4,6 +4,9 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
+        <link rel="icon" href="{{ asset('ralo-logistic-icon.png') }}" type="image/png">
+        <link rel="apple-touch-icon" href="{{ asset('ralo-logistic-icon.png') }}">
+
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
 
         <!-- Fonts -->

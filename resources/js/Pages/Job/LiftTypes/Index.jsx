@@ -66,7 +66,7 @@ export default function Index({ liftTypes, filters }) {
                         style={{ backgroundColor: '#20A4AC' }}
                     >
                         <PlusIcon className="h-5 w-5" />
-                        New Lift Type
+                        New
                     </button>
                 </div>
 

@@ -2,6 +2,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
 import InputLabel from '@/Components/InputLabel';
+import { PlusIcon, TrashIcon, ShieldCheckIcon } from '@/Components/Icons';
 import DangerButton from '@/Components/DangerButton';
 import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { confirmDelete } from '@/Utils/confirmDelete';
@@ -39,7 +40,8 @@ return (
             <Link href={route('roles.create')}
                 className="inline-flex items-center rounded-md border border-transparent px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#20A4AC] focus:ring-offset-2 active:opacity-80"
                 style={{ backgroundColor: '#20A4AC' }}>
-            Create Role
+                     <PlusIcon className="h-5 w-5" />
+             Role
             </Link>
         </div>
     </div>
@@ -64,7 +66,7 @@ return (
 
 
 
-            <form onSubmit={searchSubmit} className="mb-6 flex flex-wrap items-end gap-4">
+            <form onSubmit={searchSubmit} className="mb-6 flex flex-wrap items-end justify-end gap-4">
                 <div>
                     <InputLabel htmlFor="search" value="Search" />
                     <TextInput id="search" className="mt-1 block w-64" value={data.search} onChange={(e)=>
@@ -110,13 +112,17 @@ return (
                                     {r.guard_name}
                                 </td>
                                 <td className="px-3 py-2 text-right">
-                                    <Link href={route('roles.edit', r.id)}
-                                        className="me-2 text-[#20A4AC] hover:text-[#0d4f54]">
-                                    Permissions
+                                    <Link
+                                        href={route('roles.edit', r.id)}
+                                        className="me-2 inline-flex items-center text-[#20A4AC] hover:text-[#0d4f54]"
+                                        title="Manage Permissions"
+                                        aria-label="Manage permissions"
+                                    >
+                                        <ShieldCheckIcon className="h-5 w-5" />
                                     </Link>
-                                    <DangerButton type="button" className="text-xs" onClick={()=> destroy(r.id)}
+                                    <DangerButton type="button" className="bg-transparent hover:bg-transparent p-0" onClick={()=> destroy(r.id)}
                                         >
-                                        Delete
+                                       <TrashIcon className="h-5 w-5 text-red-500" />
                                     </DangerButton>
                                 </td>
                             </tr>

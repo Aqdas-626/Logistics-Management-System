@@ -62,7 +62,7 @@ export default function Index({ dgTypes, filters }) {
                         style={{ backgroundColor: '#20A4AC' }}
                     >
                         <PlusIcon className="h-5 w-5" />
-                        New DG Type
+                        New
                     </button>
                 </div>
 

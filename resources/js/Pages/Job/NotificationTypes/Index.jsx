@@ -66,7 +66,7 @@ export default function Index({ notificationTypes, filters }) {
                         style={{ backgroundColor: '#20A4AC' }}
                     >
                         <PlusIcon className="h-5 w-5" />
-                        New Notification Type
+                        New
                     </button>
                 </div>
 

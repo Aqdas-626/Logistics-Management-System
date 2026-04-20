@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -34,10 +35,21 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $user = $request->user();
+        if ($user !== null && $user->hasRole('driver') && ! $user->hasVerifiedEmail()) {
+            $user->sendEmailVerificationNotification();
+
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            throw ValidationException::withMessages([
+                'email' => 'Please verify your email first. We have sent you a verification link again.',
+            ]);
+        }
+
         if ($user !== null) {
             $user->forceFill([
                 'last_login_at' => now(),
-                'email_verified_at' => $user->email_verified_at ?? now(),
             ])->save();
         }
 

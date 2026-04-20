@@ -50,17 +50,17 @@ export default function Create() {
 
                             <form onSubmit={submit} className="space-y-6">
                                 <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                                    <div>
-                                        <InputLabel htmlFor="name" value="Tank Name *" />
-                                        <TextInput
-                                            id="name"
-                                            className="mt-1 block w-full"
-                                            placeholder="e.g. Main Tank"
-                                            value={data.name}
-                                            onChange={(e) => setData('name', e.target.value)}
-                                        />
-                                        <InputError message={errors.name} className="mt-2" />
-                                    </div>
+                                <div>
+                                    <InputLabel htmlFor="name" value="Tank Name *" />
+                                    <TextInput
+                                        id="name"
+                                        className="mt-1 block w-full"
+                                        placeholder="e.g. Main Tank"
+                                        value={data.name}
+                                        onChange={(e) => setData('name', e.target.value)}
+                                    />
+                                    <InputError message={errors.name} className="mt-2" />
+                                </div>
                                     <div>
                                         <InputLabel htmlFor="fuel_type" value="Fuel Type" />
                                         <select

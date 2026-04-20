@@ -40,15 +40,26 @@ export default function Edit({
     return (
         <AuthenticatedLayout
             header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Edit role
-                </h2>
+                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <h2 className="text-xl font-semibold leading-tight text-gray-800">
+                            Edit role
+                        </h2>
+                    </div>
+                    <div className="mb-4 flex justify-end">
+                        <Link href={route('roles.index')}>
+                            <SecondaryButton type="button">
+                                Cancel
+                            </SecondaryButton>
+                        </Link>
+                    </div>
+                </div>
             }
         >
             <Head title="Edit role" />
 
             <div className="py-12">
-                <div className="mx-auto max-w-3xl sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="bg-white p-6 shadow sm:rounded-lg">
                         <form onSubmit={submit} className="space-y-6">
                             <div>

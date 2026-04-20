@@ -7,16 +7,33 @@ use App\Models\Branch;
 use App\Models\Company;
 use App\Models\Expense;
 use App\Models\ExpenseCategory;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ExpenseController extends Controller
 {
-    public function index(Request $request): Response
+    private function selectedIds(Request $request): array
+    {
+        $raw = (string) $request->query('ids', '');
+        if ($raw === '') {
+            return [];
+        }
+
+        return collect(explode(',', $raw))
+            ->map(fn ($id) => (int) trim($id))
+            ->filter(fn ($id) => $id > 0)
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    private function filteredQuery(Request $request)
     {
         $query = Expense::query()
             ->with([
@@ -43,7 +60,12 @@ class ExpenseController extends Controller
             $query->where('company_id', $request->company_id);
         }
 
-        $expenses = $query
+        return $query;
+    }
+
+    public function index(Request $request): Response
+    {
+        $expenses = $this->filteredQuery($request)
             ->orderByDesc('expense_date')
             ->orderByDesc('id')
             ->paginate(10)
@@ -54,6 +76,153 @@ class ExpenseController extends Controller
             'companies' => Company::query()->active()->orderBy('name')->get(['id', 'name']),
             'filters' => $request->only(['search', 'status', 'company_id']),
         ]);
+    }
+
+    public function exportCsv(Request $request)
+    {
+        $selectedIds = $this->selectedIds($request);
+
+        $expenses = $this->filteredQuery($request)
+            ->orderByDesc('expense_date')
+            ->orderByDesc('id');
+
+        if ($selectedIds !== []) {
+            $expenses->whereIn('id', $selectedIds);
+        }
+
+        $expenses = $expenses->get();
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="expenses.csv"',
+        ];
+
+        $callback = function () use ($expenses) {
+            $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            fputcsv($handle, [
+                'S.NO',
+                'DATE',
+                'TITLE',
+                'CATEGORY',
+                'COMPANY',
+                'BRANCH',
+                'AMOUNT',
+                'CURRENCY',
+                'PAYMENT METHOD',
+                'REFERENCE NO',
+                'STATUS',
+                'CREATED BY',
+                'APPROVED AT',
+            ]);
+
+            foreach ($expenses as $index => $expense) {
+                fputcsv($handle, [
+                    $index + 1,
+                    optional($expense->expense_date)->format('Y-m-d') ?? '',
+                    $expense->title,
+                    $expense->expenseCategory?->name ?? '',
+                    $expense->company?->name ?? '',
+                    $expense->branch?->name ?? '',
+                    (string) $expense->amount,
+                    $expense->currency ?? '',
+                    $expense->payment_method ?? '',
+                    $expense->reference_no ?? '',
+                    $expense->status ?? '',
+                    $expense->creator?->name ?? '',
+                    optional($expense->approved_at)->toDateTimeString() ?? '',
+                ]);
+            }
+
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function exportExcel(Request $request)
+    {
+        $selectedIds = $this->selectedIds($request);
+
+        $expenses = $this->filteredQuery($request)
+            ->orderByDesc('expense_date')
+            ->orderByDesc('id');
+
+        if ($selectedIds !== []) {
+            $expenses->whereIn('id', $selectedIds);
+        }
+
+        $expenses = $expenses->get();
+
+        $headers = [
+            'Content-Type' => 'application/vnd.ms-excel; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="expenses.xls"',
+        ];
+
+        $callback = function () use ($expenses) {
+            $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
+
+            fputcsv($handle, [
+                'S.NO',
+                'DATE',
+                'TITLE',
+                'CATEGORY',
+                'COMPANY',
+                'BRANCH',
+                'AMOUNT',
+                'CURRENCY',
+                'PAYMENT METHOD',
+                'REFERENCE NO',
+                'STATUS',
+                'CREATED BY',
+                'APPROVED AT',
+            ], "\t");
+
+            foreach ($expenses as $index => $expense) {
+                fputcsv($handle, [
+                    $index + 1,
+                    optional($expense->expense_date)->format('Y-m-d') ?? '',
+                    $expense->title,
+                    $expense->expenseCategory?->name ?? '',
+                    $expense->company?->name ?? '',
+                    $expense->branch?->name ?? '',
+                    (string) $expense->amount,
+                    $expense->currency ?? '',
+                    $expense->payment_method ?? '',
+                    $expense->reference_no ?? '',
+                    $expense->status ?? '',
+                    $expense->creator?->name ?? '',
+                    optional($expense->approved_at)->toDateTimeString() ?? '',
+                ], "\t");
+            }
+
+            fclose($handle);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $selectedIds = $this->selectedIds($request);
+
+        $expenses = $this->filteredQuery($request)
+            ->orderByDesc('expense_date')
+            ->orderByDesc('id');
+
+        if ($selectedIds !== []) {
+            $expenses->whereIn('id', $selectedIds);
+        }
+
+        $expenses = $expenses->get();
+
+        $pdf = Pdf::loadView('exports.expenses-pdf', [
+            'expenses' => $expenses,
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->download('expenses.pdf');
     }
 
     public function create(): Response
@@ -103,7 +272,7 @@ class ExpenseController extends Controller
         return Inertia::render('Expense/Expenses/Show', [
             'expense' => $expense,
             'receiptUrl' => $expense->receipt_path
-                ? Storage::disk('public')->url($expense->receipt_path)
+                ? asset('storage/'.ltrim($expense->receipt_path, '/'))
                 : null,
         ]);
     }
@@ -115,7 +284,7 @@ class ExpenseController extends Controller
         return Inertia::render('Expense/Expenses/Edit', [
             'expense' => $expense,
             'receiptUrl' => $expense->receipt_path
-                ? Storage::disk('public')->url($expense->receipt_path)
+                ? asset('storage/'.ltrim($expense->receipt_path, '/'))
                 : null,
             ...$this->formSharedData(),
         ]);

@@ -36,9 +36,20 @@ export default function Create({ permissions, role }) {
     return (
         <AuthenticatedLayout
             header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    New role
-                </h2>
+                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <h2 className="text-xl font-semibold leading-tight text-gray-800">
+                            New role
+                        </h2>
+                    </div>
+                    <div className="mb-4 flex justify-end">
+                        <Link href={route('roles.index')}>
+                            <SecondaryButton type="button">
+                                Cancel
+                            </SecondaryButton>
+                        </Link>
+                    </div>
+                </div>
             }
         >
             <Head title="New role" />

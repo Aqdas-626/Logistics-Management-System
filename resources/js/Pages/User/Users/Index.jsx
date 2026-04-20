@@ -3,6 +3,14 @@ import SecondaryButton from '@/Components/SecondaryButton';
 import TextInput from '@/Components/TextInput';
 import InputLabel from '@/Components/InputLabel';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import {
+    ArrowRightIcon,
+    EyeIcon,
+    MagnifyingGlassIcon,
+    PencilIcon,
+    PlusIcon,
+    TrashIcon,
+} from '@/Components/Icons';
 
 export default function Index({ users, filters }) {
     const { flash } = usePage().props;
@@ -33,7 +41,8 @@ export default function Index({ users, filters }) {
                             className="inline-flex items-center rounded-md border border-transparent px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[#20A4AC] focus:ring-offset-2 active:opacity-80"
                             style={{ backgroundColor: '#20A4AC' }}
                         >
-                            Create User
+                            <PlusIcon className="h-5 w-5" />
+                            User
                         </Link>
                     </div>
                 </div>
@@ -123,7 +132,7 @@ export default function Index({ users, filters }) {
                                                     href={route('user-roles.edit', u.id)}
                                                     className="text-[#20A4AC] hover:text-[#0d4f54]"
                                                 >
-                                                    Edit roles
+                                                    <PencilIcon className="h-5 w-5" />
                                                 </Link>
                                             </td>
                                         </tr>

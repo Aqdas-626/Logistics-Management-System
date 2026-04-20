@@ -18,6 +18,7 @@ use App\Models\JobQueue;
 use App\Models\JobStatusHistory;
 use App\Models\Location;
 use App\Models\Swing;
+use App\Notifications\JobDispatchedNotification;
 use App\Support\JobFinancialShowData;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -285,19 +286,47 @@ class JobQueueController extends Controller
             'notes' => ['nullable', 'string', 'max:255'],
         ]);
 
-        Dispatch::create([
-            'job_queue_id' => $jobQueue->id,
-            'driver_vehicle_assignment_id' => $validated['driver_vehicle_assignment_id'],
-            'dispatched_at' => now(),
-            'status' => 'IN_PROCESS',
-            'notes' => $validated['notes'] ?? null,
-        ]);
+        DB::transaction(function () use ($validated, $request, $jobQueue) {
+            $dispatch = Dispatch::create([
+                'job_queue_id' => $jobQueue->id,
+                'driver_vehicle_assignment_id' => $validated['driver_vehicle_assignment_id'],
+                'dispatched_at' => now(),
+                'status' => 'IN_PROCESS',
+                'notes' => $validated['notes'] ?? null,
+            ]);
 
-        $oldStatus = $jobQueue->status;
-        $jobQueue->update([
-            'status' => 'IN_PROCESS',
-        ]);
-        $this->recordStatusHistory($jobQueue, $oldStatus, 'IN_PROCESS', $request->user()?->id);
+            $oldStatus = $jobQueue->status;
+            $jobQueue->update([
+                'status' => 'IN_PROCESS',
+            ]);
+            $this->recordStatusHistory($jobQueue, $oldStatus, 'IN_PROCESS', $request->user()?->id);
+
+            $assignment = DriverVehicleAssignment::query()
+                ->with(['driver.user:id,name,email', 'driver:id,user_id,name,email', 'vehicle:id,registration_no'])
+                ->find($dispatch->driver_vehicle_assignment_id);
+
+            $driverUser = $assignment?->driver?->user;
+            if (! $driverUser || empty($driverUser->email)) {
+                return;
+            }
+
+            $jobTypeLabel = match ($jobQueue->jobable_type) {
+                Import::class => 'Import',
+                Export::class => 'Export',
+                Cart::class => 'Cart',
+                Swing::class => 'Swing',
+                default => class_basename((string) $jobQueue->jobable_type) ?: 'Job',
+            };
+
+            $jobQueue->loadMissing('jobable');
+            $jobNumber = $jobQueue->jobable?->job_number ?? $jobQueue->jobable?->job_no ?? null;
+            $containerNumber = $this->resolveContainerForQueue($jobQueue)?->container_number;
+            $notes = $dispatch->notes;
+
+            DB::afterCommit(fn () => $driverUser->notify(
+                new JobDispatchedNotification($jobTypeLabel, $jobNumber, $containerNumber, $notes),
+            ));
+        });
 
         return redirect()->route('job-queues.index')->with('success', 'Job dispatched successfully.');
     }

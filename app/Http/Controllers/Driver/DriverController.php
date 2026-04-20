@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Company;
 use App\Models\Driver;
 use App\Models\User;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -100,11 +101,13 @@ class DriverController extends Controller
                 'license_expiry' => $validated['license_expiry'] ?? null,
                 'status' => $validated['status'] ?? 'active',
             ]);
+            
+            DB::afterCommit(fn () => event(new Registered($user)));
         });
 
         return redirect()
             ->route('drivers.index')
-            ->with('success', 'Driver created successfully.');
+            ->with('success', 'Driver created successfully. Verification email sent.');
     }
 
     public function edit(Driver $driver): Response
@@ -147,18 +150,30 @@ class DriverController extends Controller
 
         DB::transaction(function () use ($validated, $driver) {
             if ($driver->user) {
+                $newEmail = $validated['email'] ?? $driver->user->email;
+                $shouldSendVerification = $newEmail !== $driver->user->email;
+
                 $userUpdate = [
                     'name' => $validated['name'],
-                    'email' => $validated['email'] ?? $driver->user->email,
+                    'email' => $newEmail,
                     'phone' => $validated['phone'] ?? null,
                     'status' => $validated['status'] ?? 'active',
                 ];
+
+                if ($shouldSendVerification) {
+                    $userUpdate['email_verified_at'] = null;
+                }
 
                 if (!empty($validated['password'])) {
                     $userUpdate['password'] = $validated['password'];
                 }
 
                 $driver->user->update($userUpdate);
+
+                if ($shouldSendVerification) {
+                    $userForNotification = $driver->user->fresh();
+                    DB::afterCommit(fn () => event(new Registered($userForNotification)));
+                }
             }
 
             $driver->update([

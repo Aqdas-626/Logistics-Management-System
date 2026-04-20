@@ -41,21 +41,27 @@ export default function DgTypeTable({ dgTypes, onEdit, onDelete }) {
                                         {dgType.status ? 'Active' : 'Inactive'}
                                     </span>
                                 </td>
-                                <td className="whitespace-nowrap px-6 py-4 text-sm font-medium space-x-2">
+                                <td className="whitespace-nowrap px-6 py-4 text-sm font-medium">
+                                    <div className="flex items-center gap-2">
                                     <button
                                         onClick={() => onEdit(dgType)}
-                                        className="inline-flex items-center rounded-lg bg-[#20A4AC] px-3 py-1.5 text-xs font-medium text-white hover:bg-[#1a8d95] transition-colors"
+                                        type="button"
+                                        title="Edit"
+                                        aria-label="Edit DG type"
+                                        className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white p-2 text-[#178089] shadow-sm hover:bg-gray-50"
                                     >
-                                        <PencilIcon className="mr-1 h-3 w-3" />
-                                        Edit
+                                        <PencilIcon className="h-4 w-4" />
                                     </button>
                                     <button
                                         onClick={() => onDelete(dgType.id)}
-                                        className="inline-flex items-center rounded-lg bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700 transition-colors"
+                                        type="button"
+                                        title="Delete"
+                                        aria-label="Delete DG type"
+                                        className="inline-flex items-center justify-center rounded-md border border-gray-300 bg-white p-2 text-red-600 shadow-sm hover:bg-gray-50"
                                     >
-                                        <TrashIcon className="mr-1 h-3 w-3" />
-                                        Delete
+                                        <TrashIcon className="h-4 w-4" />
                                     </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))

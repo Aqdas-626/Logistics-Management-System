@@ -35,6 +35,18 @@ export default function Index({ expenses, companies, filters }) {
         });
     };
 
+    const getExportUrl = (baseUrl) => {
+        const params = new URLSearchParams();
+        if (searchTerm) params.set('search', searchTerm);
+        if (statusFilter) params.set('status', statusFilter);
+        if (companyFilter) params.set('company_id', companyFilter);
+        return `${baseUrl}${params.toString() ? `?${params.toString()}` : ''}`;
+    };
+
+    const csvExportUrl = getExportUrl(route('expenses.export.csv'));
+    const excelExportUrl = getExportUrl(route('expenses.export.excel'));
+    const pdfExportUrl = getExportUrl(route('expenses.export.pdf'));
+
     return (
         <AuthenticatedLayout>
             <Head title="Expenses" />
@@ -47,19 +59,47 @@ export default function Index({ expenses, companies, filters }) {
                     <div className="mb-4 rounded-md bg-red-50 p-4 text-red-800">{flash.error}</div>
                 )}
 
-                <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">Expenses</h1>
                         <p className="mt-2 text-gray-600">Record and track operational expenses</p>
                     </div>
-                    <Link
-                        href={route('expenses.create')}
-                        className="inline-flex items-center gap-2 rounded-lg px-4 py-2 font-medium text-white transition-colors hover:opacity-90"
-                        style={{ backgroundColor: '#20A4AC' }}
-                    >
-                        <PlusIcon className="h-5 w-5" />
-                        New expense
-                    </Link>
+                    <div className="flex flex-col items-stretch gap-2 sm:items-end">
+                        <Link
+                            href={route('expenses.create')}
+                            className="inline-flex w-fit items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-white transition-colors hover:opacity-90"
+                            style={{ backgroundColor: '#20A4AC' }}
+                        >
+                            <PlusIcon className="h-5 w-5" />
+                            New
+                        </Link>
+                        <div className="flex flex-wrap justify-end gap-2 mt-4">
+                            <button
+                                type="button"
+                                onClick={() => (window.location.href = excelExportUrl)}
+                                className="rounded px-2 py-1 text-xs font-semibold text-white"
+                                style={{ backgroundColor: '#20A4AC' }}
+                            >
+                                Excel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => (window.location.href = csvExportUrl)}
+                                className="rounded px-2 py-1 text-xs font-semibold text-white"
+                                style={{ backgroundColor: '#1B8D95' }}
+                            >
+                                CSV
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => (window.location.href = pdfExportUrl)}
+                                className="rounded px-2 py-1 text-xs font-semibold text-white"
+                                style={{ backgroundColor: '#146A70' }}
+                            >
+                                PDF
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <form
