@@ -1,0 +1,1 @@
+import{j as e}from"./app-DcfAqKk4.js";function t({className:o="",...r}){return e.jsx("input",{...r,type:"checkbox",className:"rounded border-gray-300 text-[#20A4AC] shadow-sm focus:ring-[#20A4AC] "+o})}export{t as C};
